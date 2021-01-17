@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -21,6 +22,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.projectuber.Adapters.RidesAdapter;
+import com.example.projectuber.Interfaces.RidesCallback;
+import com.example.projectuber.Models.Rides;
 import com.example.projectuber.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -36,7 +40,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
     public static final int PERMISSIONS_REQUEST_ENABLE_GPS = 111;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 222;
@@ -53,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        recyclerView = findViewById(R.id.map_recyclerView);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
@@ -61,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
+        setAdapter(dummyList());
         if (checkMapServices()) {
             if (mLocationPermissionGranted) {
                 getCurrentLocation();
@@ -188,8 +197,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setMapData(Location location) {
         if (mLocationPermissionGranted) {
             LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            mMap.addMarker(new MarkerOptions().position(sydney).title("Current Location"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     }
+
+    @Override
+    public void onRideAccepted(Rides rides) {
+        // navigate to ride start activity
+    }
+
+    @Override
+    public void onRideSelected(String pickupLat, String pickupLng,
+                               String dropOffLat, String dropOffLng,
+                               String pickupLocation, String dropOffLocation) {
+        if (mLocationPermissionGranted) {
+            // create route on map
+            LatLng pickUpLatLng = new LatLng(Double.parseDouble(pickupLat), Double.parseDouble(pickupLng));
+            LatLng dropOffLatLng = new LatLng(Double.parseDouble(dropOffLat), Double.parseDouble(dropOffLng));
+            mMap.clear();
+            mMap.addMarker(new MarkerOptions().position(pickUpLatLng).title(pickupLocation));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(pickUpLatLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomIn());
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+        }
+    }
+
+    private void setAdapter(List<Rides> list){
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(new RidesAdapter(this, list, this));
+    }
+
+    private List<Rides> dummyList() {
+        List<Rides> list = new ArrayList<>();
+        list.add(new Rides("1","1","Ali",getString(R.string.dummy_loc),
+                "31.520370", "74.358749",
+                "+923364982522",getString(R.string.dummy_loc),
+                "74.358749", "31.520375"));
+        list.add(new Rides("2","2","Hamza",getString(R.string.dummy_loc),
+                "32.520370", "74.358749",
+                "+923364982522",getString(R.string.dummy_loc),
+                "74.358749", "31.520375"));
+        list.add(new Rides("3","3","Raza",getString(R.string.dummy_loc),
+                "34.520370", "74.358749",
+                "+923364982522",getString(R.string.dummy_loc),
+                "74.358749", "31.520375"));
+
+        return list;
+
+    }
+
 }
