@@ -4,12 +4,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.View;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class AppHelper {
 
-    public static void showSnakeBar(View view, String message) {
+    public static void showSnackBar(View view, String message) {
         Snackbar snackbar = Snackbar.make(view.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
@@ -20,8 +22,9 @@ public class AppHelper {
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
     }
 
-    public void signOut() {
-        FirebaseAuth.getInstance().signOut();
-        // navigate to somewhere ..
+    public static boolean isUserAvailable() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
     }
+
+
 }
