@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ProjectUber</string>
+    <string name="insert_num">Please insert your number to move forward</string>
+    <string name="title_activity_maps">Map</string>
+</resources>

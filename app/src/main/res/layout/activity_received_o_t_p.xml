@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Auth.ReceivedOTPActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/iv_back_ReceivedOTPActivity"
+        android:src="@drawable/ic_baseline_keyboard_backspace_24"
+        android:padding="15dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/li_1_OPTActivity"
+        android:orientation="vertical"
+        android:weightSum="2"
+        android:layout_margin="10dp"
+        android:layout_below="@id/iv_back_ReceivedOTPActivity">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_title_input_enter_number_SinginActivty"
+            android:textSize="25sp"
+            android:text="Enter the 4-digit code sent to you at"
+            android:textColor="@color/black"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_title_is_wrong_number_SinginActivty"
+            android:textSize="20sp"
+            android:text="Did you enter the correct mobile number?"
+            android:textColor="@color/orange"
+            />
+    </LinearLayout>
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_OTP_code_OTPActivity"
+        android:layout_below="@id/li_1_OPTActivity"
+        android:inputType="number"
+        android:gravity="center"
+        android:hint="0000"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_resendCode_OTPActivity"
+        android:layout_below="@+id/et_OTP_code_OTPActivity"
+        android:layout_margin="30dp"
+        android:text="Resend code"
+        android:textColor="@color/purple_700"
+        android:fontFamily="sans-serif"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_next_OTPActivity"
+        android:text="Next"
+        android:textAllCaps="false"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:background="@color/black"
+        />
+
+
+
+
+</RelativeLayout>
