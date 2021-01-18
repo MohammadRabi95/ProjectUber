@@ -89,9 +89,11 @@ public class ReceivedOTPActivity extends AppCompatActivity {
         imageView_back_button = findViewById(R.id.iv_back_ReceivedOTPActivity);
         button_next = findViewById(R.id.btn_next_OTPActivity);
         editText_otp_code = findViewById(R.id.et_OTP_code_OTPActivity);
-        textView_title_with_phone.setText("Enter the 4-digit code sent to you at " + mobNum);
+        textView_title_with_phone.setText("Enter the 6-digit code sent to you at " + mobNum);
         imageView_back_button.setOnClickListener(view -> finish());
         button_next.setOnClickListener(view1 -> {
+            /*Intent intent=new Intent(ReceivedOTPActivity.this,MapsActivity.class);
+            startActivity(intent);*/
             String code = editText_otp_code.getText().toString().trim();
             if (code.isEmpty() || code.length() < 6) {
                 editText_otp_code.setError("Enter valid code");

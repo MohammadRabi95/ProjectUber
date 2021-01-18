@@ -45,8 +45,12 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesHolder>
         Rides rides = list.get(position);
         if (rides != null) {
             holder.name.setText(rides.getName());
-            holder.pickup.setText(toSpannableString("Pickup: " + rides.getPickup_location()));
-            holder.dropOff.setText(toSpannableString("DropOff: " + rides.getDropOff_location()));
+
+            holder.pickup.setText(toSpannableString(context.getString(R.string.PickUp) + rides.getPickup_location()));
+            holder.dropOff.setText(toSpannableString(context.getString(R.string.dropOf) + rides.getDropOff_location()));
+
+            // holder.pickup.setText(toSpannableString("Pickup: " + rides.getPickup_location()));
+           // holder.dropOff.setText(toSpannableString("DropOff: " + rides.getDropOff_location()));
 
             holder.call.setOnClickListener(view -> {
                 callSelectedUser(rides.getPhone());
