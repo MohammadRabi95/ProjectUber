@@ -28,26 +28,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/map"
-        android:layout_below="@+id/et_search_MapActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         />
 
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/et_search_MapActivity"
-        android:hint="Location"
-        />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/iv_search_mapActivity"
-        android:src="@drawable/ic_baseline_search_24"
-        android:layout_alignParentRight="true"
-        android:padding="10dp"
-        />
+<!--    <EditText-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/et_search_MapActivity"-->
+<!--        android:hint="Location"-->
+<!--        />-->
+<!--    <ImageView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:id="@+id/iv_search_mapActivity"-->
+<!--        android:src="@drawable/ic_baseline_search_24"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:padding="10dp"-->
+<!--        />-->
 
 
 
