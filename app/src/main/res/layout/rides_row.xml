@@ -20,7 +20,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="Sanwal khan"
             android:textColor="@color/black"
             android:id="@+id/name_rides_row"
             />
@@ -30,7 +29,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="pickup_rides_row"
             android:textColor="@color/black"
             android:id="@+id/pickup_rides_row"
             />
@@ -41,7 +39,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="dropOff_rides_row"
             android:textColor="@color/black"
             android:id="@+id/dropOff_rides_row"
             />

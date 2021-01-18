@@ -1,6 +1,8 @@
 package com.example.projectuber.Models;
 
-public class Rides {
+import java.io.Serializable;
+
+public class Rides implements Serializable {
 
     private String id;
     private String userId;
