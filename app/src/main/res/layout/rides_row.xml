@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     app:cardCornerRadius="20dp"
-    app:cardBackgroundColor="#feffc5"
+    app:cardBackgroundColor="#ffffff"
     android:layout_marginHorizontal="5dp"
     android:layout_height="wrap_content">
 
@@ -19,7 +19,7 @@
             android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="20dp"
             android:id="@+id/name_rides_row"
             />
         <TextView
@@ -27,7 +27,7 @@
             android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="15dp"
             android:id="@+id/pickup_rides_row"
             />
 
@@ -36,7 +36,7 @@
             android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="15dp"
             android:id="@+id/dropOff_rides_row"
             />
 

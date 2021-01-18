@@ -1,8 +1,8 @@
 package com.example.projectuber.Maps;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -17,15 +17,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.projectuber.AcceptRideActivity;
 import com.example.projectuber.Adapters.RidesAdapter;
 import com.example.projectuber.Interfaces.RidesCallback;
 import com.example.projectuber.Models.Rides;
 import com.example.projectuber.R;
+import com.example.projectuber.Utils.RideSession;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -34,14 +37,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.ButtCap;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
@@ -51,8 +64,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = "MapsActivity";
     private GoogleMap mMap;
     private RecyclerView recyclerView;
+    private TextView textView;
+    private CardView cardView;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean mLocationPermissionGranted = false;
+    private API api;
+    private List<LatLng> latLngList;
+    private PolylineOptions polylineOptions;
+    private List<Legs> legsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +80,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         recyclerView = findViewById(R.id.map_recyclerView);
+        textView = findViewById(R.id.tv_map);
+        cardView = findViewById(R.id.cv_map);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
+        Retrofit retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl("https://maps.googleapis.com/").build();
+        api = retrofit.create(API.class);
+        latLngList = new ArrayList<>();
+        legsList = new ArrayList<>();
     }
 
     @Override
@@ -82,6 +109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setTrafficEnabled(true);
     }
 
     private boolean checkMapServices() {
@@ -187,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final Task<Location> task = fusedLocationProviderClient.getLastLocation();
         task.addOnSuccessListener(location -> {
             if (location != null) {
-               setMapData(location);
+                setMapData(location);
             }
         }).addOnFailureListener(e -> {
 
@@ -204,7 +232,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRideAccepted(Rides rides) {
-        // navigate to ride start activity
+        RideSession.setRideAccepted(this, true);
+        RideSession.setRideModel(this, rides);
+        startActivity(new Intent(this, AcceptRideActivity.class));
     }
 
     @Override
@@ -212,39 +242,116 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                String dropOffLat, String dropOffLng,
                                String pickupLocation, String dropOffLocation) {
         if (mLocationPermissionGranted) {
-            // create route on map
+            mMap.clear();
             LatLng pickUpLatLng = new LatLng(Double.parseDouble(pickupLat), Double.parseDouble(pickupLng));
             LatLng dropOffLatLng = new LatLng(Double.parseDouble(dropOffLat), Double.parseDouble(dropOffLng));
-            mMap.clear();
+            retrofitCall(pickupLat + "," + pickupLng, dropOffLat + "," + dropOffLng,
+                    pickUpLatLng, dropOffLatLng);
+
             mMap.addMarker(new MarkerOptions().position(pickUpLatLng).title(pickupLocation));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(pickUpLatLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomIn());
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+            mMap.addMarker(new MarkerOptions().position(dropOffLatLng).title(dropOffLocation));
+
         }
     }
 
-    private void setAdapter(List<Rides> list){
+    private void setAdapter(List<Rides> list) {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new RidesAdapter(this, list, this));
     }
 
     private List<Rides> dummyList() {
         List<Rides> list = new ArrayList<>();
-        list.add(new Rides("1","1","Ali",getString(R.string.dummy_loc),
-                "31.520370", "74.358749",
-                "+923364982522",getString(R.string.dummy_loc),
-                "74.358749", "31.520375"));
-        list.add(new Rides("2","2","Hamza",getString(R.string.dummy_loc),
+        list.add(new Rides("1", "1", "Ali", getString(R.string.dummy_loc),
+                "32.1877", "74.1945",
+                "+923364982522", getString(R.string.dummy_loc),
+                "31.5204", "74.3587"));
+        list.add(new Rides("2", "2", "Hamza", getString(R.string.dummy_loc),
                 "32.520370", "74.358749",
-                "+923364982522",getString(R.string.dummy_loc),
+                "+923364982522", getString(R.string.dummy_loc),
                 "74.358749", "31.520375"));
-        list.add(new Rides("3","3","Raza",getString(R.string.dummy_loc),
+        list.add(new Rides("3", "3", "Raza", getString(R.string.dummy_loc),
                 "34.520370", "74.358749",
-                "+923364982522",getString(R.string.dummy_loc),
+                "+923364982522", getString(R.string.dummy_loc),
                 "74.358749", "31.520375"));
 
         return list;
 
     }
 
+    private void retrofitCall(String origin, String destination, LatLng orig, LatLng dest) {
+        api.getDirection("driving", "less_driving",
+                origin, destination, getString(R.string.google_maps_key))
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Result>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onSuccess(Result value) {
+                        List<Route> routeList = value.getRoutes();
+                        for (Route route : routeList) {
+                            String polyline = route.getOverViewPolyline().getPoints();
+                            latLngList.addAll(decodePoly(polyline));
+                            legsList.addAll(route.getLegs());
+                        }
+
+                        String s = "Ride Distance: " + legsList.get(0).getDistance().getText()
+                                + "\nRide Duration: " + legsList.get(0).getDuration().getText();
+                        polylineOptions = new PolylineOptions();
+                        polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
+                                R.color.black));
+                        polylineOptions.width(20);
+                        polylineOptions.startCap(new ButtCap());
+                        polylineOptions.jointType(JointType.ROUND);
+                        polylineOptions.addAll(latLngList);
+                        mMap.addPolyline(polylineOptions);
+                        cardView.setVisibility(View.VISIBLE);
+                        textView.setText(s);
+                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                        builder.include(orig);
+                        builder.include(dest);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 85));
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: ", e);
+                    }
+                });
+    }
+
+    private List<LatLng> decodePoly(String encoded) {
+
+        List<LatLng> poly = new ArrayList<LatLng>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+        }
+        return poly;
+    }
 }

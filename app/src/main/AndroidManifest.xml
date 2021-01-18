@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.projectuber">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -13,22 +13,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectUberSplash">
+        <activity android:name=".AcceptRideActivity"></activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <activity
             android:name=".Maps.MapsActivity"
-            android:label="@string/title_activity_maps" />
-        <activity android:name=".Auth.SignInActivity" />
-        <activity android:name=".Auth.ReceivedOTPActivity" />
-        <activity android:name=".SplashActivity">
+            android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Auth.SignInActivity" />
+        <activity android:name=".Auth.ReceivedOTPActivity" />
+        <activity android:name=".SplashActivity"></activity>
     </application>
 
 </manifest>
