@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.projectuber.AcceptRideActivity;
@@ -58,6 +60,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
+    private ImageView imageView_search;
+    private EditText editText_search;
     public static final int PERMISSIONS_REQUEST_ENABLE_GPS = 111;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 222;
     public static final int ERROR_DIALOG_REQUEST = 333;
@@ -79,6 +83,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        editText_search=findViewById(R.id.et_search_MapActivity);
+        imageView_search=findViewById(R.id.iv_search_mapActivity);
         recyclerView = findViewById(R.id.map_recyclerView);
         textView = findViewById(R.id.tv_map);
         cardView = findViewById(R.id.cv_map);
@@ -91,6 +97,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         api = retrofit.create(API.class);
         latLngList = new ArrayList<>();
         legsList = new ArrayList<>();
+
+
+        imageView_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               /* if(search_et_is_visible)
+                {
+                    //invoke search method  here,
+                    editText_search.setVisibility(View.INVISIBLE);
+                    search_et_is_visible=false;
+                }
+                else {
+                    editText_search.setVisibility(View.VISIBLE);
+                    search_et_is_visible=true;
+                    editText_search.requestFocus();
+                }*/
+            }
+        });
+
     }
 
     @Override
@@ -202,7 +227,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         }
-
     }
 
     private void getCurrentLocation() {

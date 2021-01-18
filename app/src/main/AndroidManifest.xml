@@ -21,7 +21,11 @@
 
         <activity
             android:name=".Maps.MapsActivity"
-            android:label="@string/title_activity_maps">
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".Auth.SignInActivity" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Auth.ReceivedOTPActivity"
+            android:windowSoftInputMode="adjustResize"  />
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

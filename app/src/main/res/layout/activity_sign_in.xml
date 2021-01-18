@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/ed_phone_signInActivtity"
             android:hint="303242323"
+            android:inputType="phone"
             />
 
     </LinearLayout>
