@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     app:cardCornerRadius="20dp"
-    app:cardBackgroundColor="#feffc5"
+    app:cardBackgroundColor="#D7DDDDDD"
     android:layout_marginHorizontal="5dp"
     android:layout_height="wrap_content">
 
@@ -19,7 +19,9 @@
             android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="15sp"
+            android:text="Sanwal khan"
+            android:textColor="@color/black"
             android:id="@+id/name_rides_row"
             />
         <TextView
@@ -27,7 +29,9 @@
             android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="15sp"
+            android:text="pickup_rides_row"
+            android:textColor="@color/black"
             android:id="@+id/pickup_rides_row"
             />
 
@@ -36,7 +40,9 @@
             android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="15sp"
+            android:text="dropOff_rides_row"
+            android:textColor="@color/black"
             android:id="@+id/dropOff_rides_row"
             />
 
@@ -45,6 +51,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="15dp"
             >
             <Button
                 android:layout_marginHorizontal="2.5dp"
@@ -53,7 +62,10 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Call"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
                 android:id="@+id/rides_call_row"
+                android:background="@drawable/btn_background"
                 />
             <Button
                 android:layout_marginHorizontal="2.5dp"
@@ -62,8 +74,12 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="Accept"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/btn_background"
                 android:id="@+id/accept_call_row"
                 />
+
         </LinearLayout>
 
 
