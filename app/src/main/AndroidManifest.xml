@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectUberSplash">
-        <activity android:name=".AcceptRideActivity"></activity>
+        <activity android:name=".Auth.GetingCredentialsActivity" android:windowSoftInputMode="stateUnchanged"/>
+        <activity android:name=".AcceptRideActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -24,9 +25,12 @@
         <activity
             android:name=".Maps.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".Auth.SignInActivity" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Auth.ReceivedOTPActivity"
-            android:windowSoftInputMode="adjustResize"  />
+        <activity
+            android:name=".Auth.SignInActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Auth.ReceivedOTPActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

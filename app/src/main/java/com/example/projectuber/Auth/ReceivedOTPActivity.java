@@ -92,6 +92,9 @@ public class ReceivedOTPActivity extends AppCompatActivity {
         textView_title_with_phone.setText("Enter the 6-digit code sent to you at " + mobNum);
         imageView_back_button.setOnClickListener(view -> finish());
         button_next.setOnClickListener(view1 -> {
+             /*Intent intent=new Intent(ReceivedOTPActivity.this,GetingCredentialsActivity.class);
+        startActivity(intent);
+        finish();*/
             /*Intent intent=new Intent(ReceivedOTPActivity.this,MapsActivity.class);
             startActivity(intent);*/
             String code = editText_otp_code.getText().toString().trim();
@@ -103,6 +106,8 @@ public class ReceivedOTPActivity extends AppCompatActivity {
             verifyVerificationCode(code);
         });
         sendVerificationCode(mobNum);
+        //manage it on your own
+
     }
 
     private void sendVerificationCode(String mobile) {
