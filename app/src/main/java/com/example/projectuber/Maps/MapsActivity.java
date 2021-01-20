@@ -30,6 +30,7 @@ import com.example.projectuber.Adapters.RidesAdapter;
 import com.example.projectuber.Interfaces.RidesCallback;
 import com.example.projectuber.Models.Rides;
 import com.example.projectuber.R;
+import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.RideSession;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -320,8 +321,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             legsList.addAll(route.getLegs());
                         }
 
+                        float distance = legsList.get(0).getDistance().getValue() / 1000;
+                        float duration = legsList.get(0).getDuration().getValue() / 60;
                         String s = "Ride Distance: " + legsList.get(0).getDistance().getText()
-                                + "\nRide Duration: " + legsList.get(0).getDuration().getText();
+                                + "\nRide Duration: " + legsList.get(0).getDuration().getText()
+                                + "\nEstimated Fair: " + AppHelper.calculateFairs(distance, duration)
+                                + " $";
                         polylineOptions = new PolylineOptions();
                         polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
                                 R.color.black));
@@ -341,7 +346,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError: ", e);
+                        Log.e(TAG, "onError: ", e);
                     }
                 });
     }
