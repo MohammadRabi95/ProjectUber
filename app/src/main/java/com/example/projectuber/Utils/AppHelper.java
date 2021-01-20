@@ -26,5 +26,23 @@ public class AppHelper {
         return FirebaseAuth.getInstance().getCurrentUser() != null;
     }
 
+    public static String calculateFairs(float distance, float duration) {
+        float fairPer1Km = 0.25f; // dummy fairs
+        float fairPer1Min = 0.05f;
+        float total = (fairPer1Km * distance) + (fairPer1Min * duration);
+        return String.valueOf(total);
+    }
+
+    public static void genSeries() {
+        int a = 0, b = 1;
+
+        for (int i = 1; i < 11 ; i++) {
+            int sum = a + b;
+            System.out.println("aaaaaaaaaaaaaaaaaaaaaa :" + a);
+            a = b;
+            b = sum;
+
+        }
+    }
 
 }

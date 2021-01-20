@@ -8,6 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.example.projectuber.Auth.SignInActivity;
+import com.example.projectuber.Maps.MapsActivity;
+import com.example.projectuber.Utils.AppHelper;
+import com.example.projectuber.Utils.CurrentUser;
 import com.example.projectuber.Utils.RideSession;
 
 public class SplashActivity extends AppCompatActivity {
@@ -21,15 +24,26 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (RideSession.IsRideAccepted(SplashActivity.this)){
+                if (AppHelper.isInternetAvailable(SplashActivity.this)) {
+                    if (AppHelper.isUserAvailable()) {
+                        if (!RideSession.IsRideAccepted(SplashActivity.this)) {
+                            startActivity(new Intent(SplashActivity.this, AcceptRideActivity.class));
+                            finish();
+                        } else if (RideSession.IsRideInProgress(SplashActivity.this)) {
 
-                }
-                if (RideSession.IsRideInProgress(SplashActivity.this)) {
+                        } else {
+                            startActivity(new Intent(SplashActivity.this, MapsActivity.class));
+                            finish();
+                        }
 
+                    } else {
+                        Intent intent = new Intent(SplashActivity.this, SignInActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
+                 //   AppHelper.showSnackBar();
                 }
-                Intent intent=new Intent(SplashActivity.this, SignInActivity.class);
-                startActivity(intent);
-                finish();
             }
         },2000);
     }
