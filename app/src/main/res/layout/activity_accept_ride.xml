@@ -1,9 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AcceptRideActivity">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/iv_back_acceptRideActivity"
+        android:src="@drawable/ic_baseline_keyboard_backspace_24"
+        android:layout_margin="10dp"
+        />
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_view_top"
+        android:layout_below="@id/iv_back_acceptRideActivity"
+        android:layout_margin="20dp"
+        app:cardCornerRadius="10dp"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:id="@+id/iv_ride_indicator_acceptRideActivity"
+                android:src="@drawable/ic_baseline_arrow_downward_24"
+                android:layout_centerVertical="true"
+                android:scaleType="fitXY"
+                 />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_ride_from_acceptRideActivity"
+                android:text="manawan lahore"
+                android:padding="5dp"
+                android:layout_toRightOf="@id/iv_ride_indicator_acceptRideActivity"
+                android:fontFamily="serif"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_ride_to_acceptRideActivity"
+                android:text="mughal pura lahore"
+                android:padding="5dp"
+                android:layout_toRightOf="@id/iv_ride_indicator_acceptRideActivity"
+                android:layout_below="@id/tv_ride_from_acceptRideActivity"
+                android:fontFamily="serif"
+                />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/cardView_id"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="-23dp"
+            android:layout_below="@+id/card_view_top"
+            >
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_input_captain_name_acceptRideActivity"
+                    android:text="Mr. "
+                    android:fontFamily="serif"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_input_name_captain_name"
+                    android:layout_toRightOf="@+id/tv_input_captain_name_acceptRideActivity"
+                    android:text="Sanwal"
+                    android:fontFamily="serif"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_title2_captain_name"
+                    android:layout_toRightOf="@+id/tv_input_name_captain_name"
+                    android:text=" is ready, just start ride."
+                    android:fontFamily="serif"
+                    />
+
+            </RelativeLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+
+
+
+
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="5dp"
+        android:id="@+id/card_view_botom"
+        android:layout_above="@id/btn_start_ride__acceptRideActivity"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/iv_ride_icon_acceptRideActivity"
+                android:src="@drawable/ic_baseline_directions_car_24"
+                android:layout_centerVertical="true"
+                android:scaleType="fitXY"
+                android:layout_margin="10dp"
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentEnd="true"
+                >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="3dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tv_title_ride_duration_acceptRideActivity"
+                        android:text="Duration: "
+                        android:textColor="@color/black"
+                        android:fontFamily="serif"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tv_input_ride_duration_acceptRideActivity"
+                        android:text="time here"
+                        android:fontFamily="serif"
+                        />
+                </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="3dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_title_ride_fair_acceptRideActivity"
+                    android:text="Fair: "
+                    android:textColor="@color/black"
+                    android:fontFamily="serif"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_input_ride_fair_acceptRideActivity"
+                    android:text="input fair"
+                    android:fontFamily="serif"
+                    />
+
+            </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_start_ride__acceptRideActivity"
+        android:text="Start ride"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:textStyle="bold"
+        android:background="@drawable/btn_background"
+        android:textAllCaps="false"/>
+
+</RelativeLayout>
