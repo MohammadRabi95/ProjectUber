@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class AppHelper {
 
     public static void showSnackBar(View view, String message) {
-        Snackbar snackbar = Snackbar.make(view.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 
@@ -31,18 +31,6 @@ public class AppHelper {
         float fairPer1Min = 0.05f;
         float total = (fairPer1Km * distance) + (fairPer1Min * duration);
         return String.valueOf(total);
-    }
-
-    public static void genSeries() {
-        int a = 0, b = 1;
-
-        for (int i = 1; i < 11 ; i++) {
-            int sum = a + b;
-            System.out.println("aaaaaaaaaaaaaaaaaaaaaa :" + a);
-            a = b;
-            b = sum;
-
-        }
     }
 
 }

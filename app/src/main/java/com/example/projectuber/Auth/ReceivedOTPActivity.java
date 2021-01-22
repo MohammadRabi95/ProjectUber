@@ -11,8 +11,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.projectuber.DatabaseCalls;
+import com.example.projectuber.GetRideActivity;
+import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Maps.MapsActivity;
 import com.example.projectuber.R;
+import com.example.projectuber.Utils.AppHelper;
+import com.example.projectuber.Utils.CurrentUser;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -32,7 +37,6 @@ public class ReceivedOTPActivity extends AppCompatActivity {
     private EditText editText_otp_code;
     private FirebaseAuth mAuth;
     private String mVerificationId;
-    private String mobNum = "";
     private final PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
@@ -56,6 +60,7 @@ public class ReceivedOTPActivity extends AppCompatActivity {
             //mResendToken = forceResendingToken;
         }
     };
+    private String mobNum = "";
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -128,17 +133,39 @@ public class ReceivedOTPActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Intent intent = new Intent(this, MapsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
+                        saveUser();
                     } else {
                         String message = "Something is wrong, we will fix it soon...";
                         if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                             message = "Invalid code entered...";
                         }
-                        // AppHelper.showSnakeBar(Objects.requireNonNull(getView()), message);
+                        AppHelper.showSnackBar(findViewById(android.R.id.content), message);
+
                     }
                 });
     }
+
+    private void saveUser() {
+        if (AppHelper.isUserAvailable()) {
+            DatabaseCalls.isUserSaved(CurrentUser.getUserId(), new ResponseInterface() {
+                @Override
+                public void onResponse(Object... params) {
+                    Intent intent;
+                    if ((boolean) params[0]) {
+                        intent = new Intent(ReceivedOTPActivity.this, GetRideActivity.class);
+                    } else {
+                        intent = new Intent(ReceivedOTPActivity.this, GetingCredentialsActivity.class);
+                    }
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+                @Override
+                public void onError(String error) {
+                    AppHelper.showSnackBar(findViewById(android.R.id.content), error);
+                }
+            });
+        }
+    }
+
 }
