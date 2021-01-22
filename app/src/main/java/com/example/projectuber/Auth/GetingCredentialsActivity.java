@@ -14,14 +14,11 @@ import android.widget.TextView;
 import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
-import com.example.projectuber.Models.Driver;
 import com.example.projectuber.Models.User;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class GetingCredentialsActivity extends AppCompatActivity {
 
