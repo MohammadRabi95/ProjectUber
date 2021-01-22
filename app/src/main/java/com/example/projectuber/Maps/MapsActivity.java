@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.example.projectuber.AcceptRideActivity;
 import com.example.projectuber.Adapters.RidesAdapter;
+import com.example.projectuber.DatabaseCalls;
+import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Interfaces.RidesCallback;
 import com.example.projectuber.Models.Ride;
 import com.example.projectuber.R;
@@ -59,7 +61,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
-//    private ImageView imageView_search;
+    //    private ImageView imageView_search;
 //    private EditText editText_search;
     public static final int PERMISSIONS_REQUEST_ENABLE_GPS = 111;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 222;
@@ -120,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
-        setAdapter(dummyList());
+        getRides();
         if (checkMapServices()) {
             if (mLocationPermissionGranted) {
                 getCurrentLocation();
@@ -247,9 +249,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void setMapData(Location location) {
         if (mLocationPermissionGranted) {
-            LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(sydney).title("Current Location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(loc).title("Current Location"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
         }
     }
 
@@ -282,23 +284,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         recyclerView.setAdapter(new RidesAdapter(this, list, this));
     }
 
-    private List<Ride> dummyList() {
-        List<Ride> list = new ArrayList<>();
-        list.add(new Ride("1", "1", "Ali", getString(R.string.dummy_loc),
-                "32.1877", "74.1945",
-                "+923364982522", getString(R.string.dummy_loc),
-                "31.5204", "74.3587"));
-        list.add(new Ride("2", "2", "Hamza", getString(R.string.dummy_loc),
-                "32.520370", "74.358749",
-                "+923364982522", getString(R.string.dummy_loc),
-                "74.358749", "31.520375"));
-        list.add(new Ride("3", "3", "Raza", getString(R.string.dummy_loc),
-                "34.520370", "74.358749",
-                "+923364982522", getString(R.string.dummy_loc),
-                "74.358749", "31.520375"));
+    private void getRides() {
+        DatabaseCalls.getRidesCall(new ResponseInterface() {
+            @Override
+            public void onResponse(Object... params) {
+                setAdapter((List<Ride>) params[0]);
+            }
 
-        return list;
-
+            @Override
+            public void onError(String error) {
+                AppHelper.showSnackBar(findViewById(android.R.id.content), error);
+            }
+        });
     }
 
     private void retrofitCall(String origin, String destination, LatLng orig, LatLng dest) {

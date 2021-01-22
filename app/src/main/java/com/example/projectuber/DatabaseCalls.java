@@ -11,6 +11,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -39,8 +40,6 @@ public class DatabaseCalls {
             Log.e(TAG, "onFailure: setRides ", e);
             responseInterface.onError(e.getMessage());
         });
-
-
     }
 
     public static void getRidesCall(ResponseInterface responseInterface) {
@@ -61,7 +60,6 @@ public class DatabaseCalls {
                     responseInterface.onResponse(list);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "onCancelled: getRides ", error.toException());
@@ -80,6 +78,22 @@ public class DatabaseCalls {
         }).addOnFailureListener(e -> {
             Log.e(TAG, "onFailure: setUser ", e);
             responseInterface.onError(e.getMessage());
+        });
+    }
+
+    public static void isUserSaved(String id, ResponseInterface responseInterface) {
+        rideRef.keepSynced(true);
+        Query query = userRef.orderByChild("id").equalTo(id);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                responseInterface.onResponse(snapshot.exists());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "onCancelled: isUserSaved ", error.toException());
+                responseInterface.onError(error.getDetails());
+            }
         });
     }
 }
