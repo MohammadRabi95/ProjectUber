@@ -4,12 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.example.projectuber.Models.Rides;
+import com.example.projectuber.Models.Ride;
 import com.example.projectuber.Utils.RideSession;
 
 public class AcceptRideActivity extends AppCompatActivity {
 
-    private Rides ride;
+    private Ride ride;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

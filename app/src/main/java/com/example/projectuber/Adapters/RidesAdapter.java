@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectuber.Interfaces.RidesCallback;
-import com.example.projectuber.Models.Rides;
+import com.example.projectuber.Models.Ride;
 import com.example.projectuber.R;
 
 import java.util.List;
@@ -24,10 +23,10 @@ import java.util.List;
 public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesHolder> {
 
     private Context context;
-    private List<Rides> list;
+    private List<Ride> list;
     private RidesCallback ridesCallback;
 
-    public RidesAdapter(Context context, List<Rides> list, RidesCallback ridesCallback) {
+    public RidesAdapter(Context context, List<Ride> list, RidesCallback ridesCallback) {
         this.context = context;
         this.list = list;
         this.ridesCallback = ridesCallback;
@@ -42,29 +41,29 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesHolder>
 
     @Override
     public void onBindViewHolder(@NonNull RidesHolder holder, int position) {
-        Rides rides = list.get(position);
-        if (rides != null) {
-            holder.name.setText(rides.getName());
+        Ride ride = list.get(position);
+        if (ride != null) {
+            holder.name.setText(ride.getName());
 
-            holder.pickup.setText(toSpannableString(context.getString(R.string.PickUp) + rides.getPickup_location()));
-            holder.dropOff.setText(toSpannableString(context.getString(R.string.dropOf) + rides.getDropOff_location()));
+            holder.pickup.setText(toSpannableString(context.getString(R.string.PickUp) + ride.getPickup_location()));
+            holder.dropOff.setText(toSpannableString(context.getString(R.string.dropOf) + ride.getDropOff_location()));
 
             // holder.pickup.setText(toSpannableString("Pickup: " + rides.getPickup_location()));
            // holder.dropOff.setText(toSpannableString("DropOff: " + rides.getDropOff_location()));
 
             holder.call.setOnClickListener(view -> {
-                callSelectedUser(rides.getPhone());
+                callSelectedUser(ride.getPhone());
             });
 
             holder.accept.setOnClickListener(view -> {
-                ridesCallback.onRideAccepted(rides);
+                ridesCallback.onRideAccepted(ride);
             });
 
             holder.itemView.setOnClickListener(view -> {
-                ridesCallback.onRideSelected(rides.getPickup_latitude(),
-                        rides.getPickup_longitude(), rides.getDropOff_latitude(),
-                        rides.getDropOff_longitude(), rides.getPickup_location(),
-                        rides.getDropOff_location());
+                ridesCallback.onRideSelected(ride.getPickup_latitude(),
+                        ride.getPickup_longitude(), ride.getDropOff_latitude(),
+                        ride.getDropOff_longitude(), ride.getPickup_location(),
+                        ride.getDropOff_location());
             });
         }
     }

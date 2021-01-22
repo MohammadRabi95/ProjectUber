@@ -21,14 +21,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.projectuber.AcceptRideActivity;
 import com.example.projectuber.Adapters.RidesAdapter;
 import com.example.projectuber.Interfaces.RidesCallback;
-import com.example.projectuber.Models.Rides;
+import com.example.projectuber.Models.Ride;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.RideSession;
@@ -256,9 +254,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onRideAccepted(Rides rides) {
+    public void onRideAccepted(Ride ride) {
         RideSession.setRideAccepted(this, true);
-        RideSession.setRideModel(this, rides);
+        RideSession.setRideModel(this, ride);
         startActivity(new Intent(this, AcceptRideActivity.class));
     }
 
@@ -279,22 +277,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void setAdapter(List<Rides> list) {
+    private void setAdapter(List<Ride> list) {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new RidesAdapter(this, list, this));
     }
 
-    private List<Rides> dummyList() {
-        List<Rides> list = new ArrayList<>();
-        list.add(new Rides("1", "1", "Ali", getString(R.string.dummy_loc),
+    private List<Ride> dummyList() {
+        List<Ride> list = new ArrayList<>();
+        list.add(new Ride("1", "1", "Ali", getString(R.string.dummy_loc),
                 "32.1877", "74.1945",
                 "+923364982522", getString(R.string.dummy_loc),
                 "31.5204", "74.3587"));
-        list.add(new Rides("2", "2", "Hamza", getString(R.string.dummy_loc),
+        list.add(new Ride("2", "2", "Hamza", getString(R.string.dummy_loc),
                 "32.520370", "74.358749",
                 "+923364982522", getString(R.string.dummy_loc),
                 "74.358749", "31.520375"));
-        list.add(new Rides("3", "3", "Raza", getString(R.string.dummy_loc),
+        list.add(new Ride("3", "3", "Raza", getString(R.string.dummy_loc),
                 "34.520370", "74.358749",
                 "+923364982522", getString(R.string.dummy_loc),
                 "74.358749", "31.520375"));

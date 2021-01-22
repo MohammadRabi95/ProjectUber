@@ -1,26 +1,25 @@
 package com.example.projectuber.Models;
 
-public class Driver {
-    private String fname, lname, phone, password, email;
+public class User {
+    private String id, name, phone, password, email;
 
-    public Driver() {
-
+    public User() {
     }
 
-    public String getFname() {
-        return fname;
+    public String getId() {
+        return id;
     }
 
-    public void setFname(String fname) {
-        this.fname = fname;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getLname() {
-        return lname;
+    public String getName() {
+        return name;
     }
 
-    public void setLname(String lname) {
-        this.lname = lname;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhone() {

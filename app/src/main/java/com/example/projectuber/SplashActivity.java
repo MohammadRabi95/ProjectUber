@@ -32,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
                         } else if (RideSession.IsRideInProgress(SplashActivity.this)) {
 
                         } else {
-                            startActivity(new Intent(SplashActivity.this, MapsActivity.class));
+                            startActivity(new Intent(SplashActivity.this, GetRideActivity.class));
                             finish();
                         }
 
@@ -42,7 +42,7 @@ public class SplashActivity extends AppCompatActivity {
                         finish();
                     }
                 } else {
-                 //   AppHelper.showSnackBar();
+                    AppHelper.showSnackBar(findViewById(android.R.id.content), "No Internet Connection");
                 }
             }
         },2000);
