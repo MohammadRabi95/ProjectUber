@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.projectuber.Models.Ride;
+import com.example.projectuber.Models.RideProgress;
 import com.google.gson.Gson;
 
 public class RideSession {
@@ -41,7 +42,7 @@ public class RideSession {
         return sharedPref.getBoolean(rideAccepted, false);
     }
 
-    public static void setRideModel(Context context, Ride ride) {
+    public static void setRideModel(Context context, RideProgress ride) {
         SharedPreferences.Editor sharedPref = context.getSharedPreferences(RIDE_SESSION,
                 Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
@@ -51,11 +52,11 @@ public class RideSession {
 
     }
 
-    public static Ride getRideModel(Context context) {
+    public static RideProgress getRideModel(Context context) {
         SharedPreferences sharedPref = context.getSharedPreferences(RIDE_SESSION,
                 Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPref.getString(rideModel, "");
-        return gson.fromJson(json, Ride.class);
+        return gson.fromJson(json, RideProgress.class);
     }
 }

@@ -5,4 +5,5 @@
     <string name="dummy_loc">58 Slaughter house Quaid-e-Azam Industrial State Lahore</string>
     <string name="PickUp"><b>Pick up: </b></string>
     <string name="dropOf"><b>DropOff: </b></string>
+    <string name="somthing_wrong">Oops Something Went wrong</string>
 </resources>

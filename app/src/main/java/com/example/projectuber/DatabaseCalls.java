@@ -37,11 +37,7 @@ public class DatabaseCalls {
         String id = rideRef.push().getKey();
         ride.setId(id);
         rideRef.child(id).setValue(ride).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                responseInterface.onResponse(true);
-            } else {
-                responseInterface.onResponse(false);
-            }
+            responseInterface.onResponse(task.isSuccessful());
         }).addOnFailureListener(e -> {
             Log.e(TAG, "onFailure: setRides ", e);
             responseInterface.onError(e.getMessage());
@@ -77,11 +73,7 @@ public class DatabaseCalls {
 
     public static void setUserCall(User user, ResponseInterface responseInterface) {
         userRef.child(user.getId()).setValue(user).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                responseInterface.onResponse(true);
-            } else {
-                responseInterface.onResponse(false);
-            }
+            responseInterface.onResponse(task.isSuccessful());
         }).addOnFailureListener(e -> {
             Log.e(TAG, "onFailure: setUser ", e);
             responseInterface.onError(e.getMessage());
@@ -108,11 +100,7 @@ public class DatabaseCalls {
     public static void removeFromRideProgressCall(RideProgress rideProgress,
                                                 ResponseInterface responseInterface){
         progressRidesRef.child(rideProgress.getId()).removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                responseInterface.onResponse(true);
-            } else {
-                responseInterface.onResponse(false);
-            }
+            responseInterface.onResponse(task.isSuccessful());
         }).addOnFailureListener(e -> {
             Log.e(TAG, "onFailure: removeFromRideAcceptCall ", e);
             responseInterface.onError(e.getMessage());
@@ -141,14 +129,14 @@ public class DatabaseCalls {
                     completedRide.setDropOff_longitude(rideProgress.getDropOff_longitude());
                     completedRide.setRideAcceptedTimeStamp(rideProgress.getRideAcceptedTimeStamp());
                     completedRide.setPickupTimeStamp(rideProgress.getPickupTimeStamp());
+                    completedRide.setDistance(rideProgress.getDistance());
+                    completedRide.setDuration(rideProgress.getDuration());
+                    completedRide.setPrice(rideProgress.getPrice());
                     completedRide.setDropOffTimeStamp(AppHelper.getTimeStamp());
+
                     progressRidesRef.child(rideProgress.getId()).setValue(completedRide)
                             .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    responseInterface.onResponse(true);
-                                } else {
-                                    responseInterface.onResponse(false);
-                                }
+                                responseInterface.onResponse(task.isSuccessful());
                             }).addOnFailureListener(e -> {
                         Log.e(TAG, "onFailure: setRideCompleteCall ", e);
                         responseInterface.onError(e.getMessage());
@@ -165,8 +153,7 @@ public class DatabaseCalls {
         });
     }
 
-    public static void setRideProgressCall(Ride ride, boolean isRideStarted,
-                                         ResponseInterface responseInterface) {
+    public static void setRideAcceptCall(Ride ride, ResponseInterface responseInterface) {
         removeFromRideCall(ride, new ResponseInterface() {
             @Override
             public void onResponse(Object... params) {
@@ -186,12 +173,15 @@ public class DatabaseCalls {
                     progress.setPickup_longitude(ride.getPickup_longitude());
                     progress.setDropOff_longitude(ride.getDropOff_longitude());
                     progress.setRideAcceptedTimeStamp(AppHelper.getTimeStamp());
-                    progress.setRideStarted(isRideStarted);
+                    progress.setPrice(ride.getPrice());
+                    progress.setDistance(ride.getDistance());
+                    progress.setDuration(ride.getDuration());
+                    progress.setRideStarted(false);
                     progress.setPickupTimeStamp("");
                     progressRidesRef.child(ride.getId()).setValue(progress)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
-                                    responseInterface.onResponse(true);
+                                    responseInterface.onResponse(true, progress);
                                 } else {
                                     responseInterface.onResponse(false);
                                 }
@@ -210,6 +200,16 @@ public class DatabaseCalls {
             }
         });
     }
+
+    public static void setRideProgressCall(String id, ResponseInterface responseInterface) {
+                    progressRidesRef.child(id).child("isRideStarted").setValue(true)
+                            .addOnCompleteListener(task -> {
+                                responseInterface.onResponse(task.isSuccessful());
+                            }).addOnFailureListener(e -> {
+                        Log.e(TAG, "onFailure: setRideAcceptCall ", e);
+                        responseInterface.onError(e.getMessage());
+                    });
+            }
 
     private static void removeFromRideCall(Ride ride, ResponseInterface responseInterface) {
         rideRef.child(ride.getId()).removeValue().addOnCompleteListener(task -> {

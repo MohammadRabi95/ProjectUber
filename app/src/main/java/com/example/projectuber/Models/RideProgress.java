@@ -16,7 +16,34 @@ public class RideProgress {
     private String dropOff_longitude;
     private String rideAcceptedTimeStamp;
     private String pickupTimeStamp;
+    private String distance;
+    private String duration;
+    private String price;
     private boolean isRideStarted;
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
     public boolean isRideStarted() {
         return isRideStarted;

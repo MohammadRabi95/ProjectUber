@@ -23,12 +23,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.projectuber.AcceptRideActivity;
+import com.example.projectuber.Driver.AcceptRideActivity;
 import com.example.projectuber.Adapters.RidesAdapter;
 import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Interfaces.RidesCallback;
 import com.example.projectuber.Models.Ride;
+import com.example.projectuber.Models.RideProgress;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.RideSession;
@@ -58,6 +59,8 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.example.projectuber.Utils.AppHelper.decodePoly;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
@@ -257,15 +260,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRideAccepted(Ride ride) {
-        DatabaseCalls.setRideProgressCall(ride, false, new ResponseInterface() {
+        DatabaseCalls.setRideAcceptCall(ride, new ResponseInterface() {
             @Override
             public void onResponse(Object... params) {
                 if ((boolean) params[0]) {
                     RideSession.setRideAccepted(MapsActivity.this, true);
-                    RideSession.setRideModel(MapsActivity.this, ride);
+                    RideSession.setRideModel(MapsActivity.this, (RideProgress) params[1]);
                     startActivity(new Intent(MapsActivity.this, AcceptRideActivity.class));
                 } else {
-                    AppHelper.showSnackBar(findViewById(android.R.id.content), "Oops Something Went wrong");
+                    AppHelper.showSnackBar(findViewById(android.R.id.content), getString(R.string.somthing_wrong));
                 }
             }
             @Override
@@ -360,36 +363,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
     }
 
-    private List<LatLng> decodePoly(String encoded) {
 
-        List<LatLng> poly = new ArrayList<LatLng>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
-        }
-        return poly;
-    }
 }

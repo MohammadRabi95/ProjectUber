@@ -8,7 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.example.projectuber.Auth.SignInActivity;
+import com.example.projectuber.Driver.AcceptRideActivity;
 import com.example.projectuber.Maps.MapsActivity;
+import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.example.projectuber.Utils.RideSession;
