@@ -31,6 +31,11 @@ public class CurrentUser {
         }
     }
 
+    public static String getName() {
+       // implementation needed
+        return "name";
+    }
+
     public static void setDrivingMode(Context context, boolean isDriver) {
         SharedPreferences.Editor sharedPref = context.getSharedPreferences(CURRENT_USER_SESSION,
                 Context.MODE_PRIVATE).edit();

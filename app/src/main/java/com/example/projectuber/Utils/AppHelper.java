@@ -33,4 +33,8 @@ public class AppHelper {
         return String.valueOf(total);
     }
 
+    public static String getTimeStamp() {
+        return "";
+    }
+
 }

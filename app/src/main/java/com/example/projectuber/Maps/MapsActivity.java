@@ -257,9 +257,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onRideAccepted(Ride ride) {
-        RideSession.setRideAccepted(this, true);
-        RideSession.setRideModel(this, ride);
-        startActivity(new Intent(this, AcceptRideActivity.class));
+        DatabaseCalls.setRideProgressCall(ride, false, new ResponseInterface() {
+            @Override
+            public void onResponse(Object... params) {
+                if ((boolean) params[0]) {
+                    RideSession.setRideAccepted(MapsActivity.this, true);
+                    RideSession.setRideModel(MapsActivity.this, ride);
+                    startActivity(new Intent(MapsActivity.this, AcceptRideActivity.class));
+                } else {
+                    AppHelper.showSnackBar(findViewById(android.R.id.content), "Oops Something Went wrong");
+                }
+            }
+            @Override
+            public void onError(String error) {
+                AppHelper.showSnackBar(findViewById(android.R.id.content), error);
+            }
+        });
+
     }
 
     @Override

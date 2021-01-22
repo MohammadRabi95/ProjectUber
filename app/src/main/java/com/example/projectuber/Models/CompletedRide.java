@@ -1,6 +1,6 @@
 package com.example.projectuber.Models;
 
-public class RideProgress {
+public class CompletedRide {
     private String id;
     private String passengerId;
     private String driverId;
@@ -16,15 +16,7 @@ public class RideProgress {
     private String dropOff_longitude;
     private String rideAcceptedTimeStamp;
     private String pickupTimeStamp;
-    private boolean isRideStarted;
-
-    public boolean isRideStarted() {
-        return isRideStarted;
-    }
-
-    public void setRideStarted(boolean rideStarted) {
-        isRideStarted = rideStarted;
-    }
+    private String dropOffTimeStamp;
 
     public String getId() {
         return id;
@@ -146,6 +138,14 @@ public class RideProgress {
         this.pickupTimeStamp = pickupTimeStamp;
     }
 
-    public RideProgress() {
+    public String getDropOffTimeStamp() {
+        return dropOffTimeStamp;
+    }
+
+    public void setDropOffTimeStamp(String dropOffTimeStamp) {
+        this.dropOffTimeStamp = dropOffTimeStamp;
+    }
+
+    public CompletedRide() {
     }
 }
