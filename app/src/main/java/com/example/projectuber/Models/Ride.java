@@ -14,25 +14,35 @@ public class Ride implements Serializable {
     private String dropOff_location;
     private String dropOff_latitude;
     private String dropOff_longitude;
+    private String distance;
+    private String duration;
+    private String price;
 
-    public Ride() {
+    public String getDistance() {
+        return distance;
     }
 
-    public Ride(String id, String userId, String name,
-                String pickup_location, String pickup_latitude,
-                String pickup_longitude, String phone,
-                String dropOff_location, String dropOff_latitude,
-                String dropOff_longitude) {
-        this.id = id;
-        this.userId = userId;
-        this.name = name;
-        this.pickup_location = pickup_location;
-        this.pickup_latitude = pickup_latitude;
-        this.pickup_longitude = pickup_longitude;
-        this.phone = phone;
-        this.dropOff_location = dropOff_location;
-        this.dropOff_latitude = dropOff_latitude;
-        this.dropOff_longitude = dropOff_longitude;
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public Ride() {
     }
 
     public String getId() {

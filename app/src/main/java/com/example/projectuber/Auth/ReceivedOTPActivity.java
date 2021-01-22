@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.projectuber.DatabaseCalls;
-import com.example.projectuber.GetRideActivity;
+import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;

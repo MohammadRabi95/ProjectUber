@@ -1,8 +1,10 @@
-package com.example.projectuber;
+package com.example.projectuber.Passenger;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.projectuber.R;
 
 public class GetRideActivity extends AppCompatActivity {
 
