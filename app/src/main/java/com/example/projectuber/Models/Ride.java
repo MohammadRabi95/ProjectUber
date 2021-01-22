@@ -2,7 +2,7 @@ package com.example.projectuber.Models;
 
 import java.io.Serializable;
 
-public class Rides implements Serializable {
+public class Ride implements Serializable {
 
     private String id;
     private String userId;
@@ -15,14 +15,14 @@ public class Rides implements Serializable {
     private String dropOff_latitude;
     private String dropOff_longitude;
 
-    public Rides() {
+    public Ride() {
     }
 
-    public Rides(String id, String userId, String name,
-                 String pickup_location, String pickup_latitude,
-                 String pickup_longitude, String phone,
-                 String dropOff_location, String dropOff_latitude,
-                 String dropOff_longitude) {
+    public Ride(String id, String userId, String name,
+                String pickup_location, String pickup_latitude,
+                String pickup_longitude, String phone,
+                String dropOff_location, String dropOff_latitude,
+                String dropOff_longitude) {
         this.id = id;
         this.userId = userId;
         this.name = name;

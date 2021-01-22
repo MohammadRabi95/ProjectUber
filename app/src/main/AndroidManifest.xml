@@ -15,7 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectUberSplash">
-        <activity android:name=".Auth.GetingCredentialsActivity" android:windowSoftInputMode="stateUnchanged"/>
+        <activity android:name=".GetRideActivity"></activity>
+        <activity
+            android:name=".Auth.GetingCredentialsActivity"
+            android:windowSoftInputMode="stateUnchanged" />
         <activity android:name=".AcceptRideActivity" />
 
         <meta-data

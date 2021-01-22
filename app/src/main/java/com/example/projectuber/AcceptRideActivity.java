@@ -8,11 +8,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.projectuber.Models.Rides;
+import com.example.projectuber.Models.Ride;
 import com.example.projectuber.Utils.RideSession;
 
 public class AcceptRideActivity extends AppCompatActivity {
 
+    private Ride ride;
     private TextView textView_from,textView_to,textView_clint_name,textView_duration,textView_fair;
     private ImageView imageView_back;
     private Button button_start_ride;
