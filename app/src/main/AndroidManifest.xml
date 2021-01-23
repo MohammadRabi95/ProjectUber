@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectUberSplash">
-        <activity android:name=".Driver.ProgressRideActivity"></activity>
+        <activity android:name=".SelectModeActivity"></activity>
+        <activity android:name=".Driver.ProgressRideActivity" />
         <activity android:name=".Maps.PassengerMapsActivity" />
         <activity android:name=".Passenger.GetRideActivity" />
         <activity
