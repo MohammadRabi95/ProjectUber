@@ -9,7 +9,8 @@ import android.os.Looper;
 
 import com.example.projectuber.Auth.SignInActivity;
 import com.example.projectuber.Driver.AcceptRideActivity;
-import com.example.projectuber.Maps.MapsActivity;
+import com.example.projectuber.Maps.DriverMapsActivity;
+import com.example.projectuber.Maps.PassengerMapsActivity;
 import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
@@ -26,27 +27,25 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(() -> {
             if (AppHelper.isInternetAvailable(SplashActivity.this)) {
                 if (AppHelper.isUserAvailable()) {
-                    if (CurrentUser.IsDriver(SplashActivity.this)) {
-                        if (!RideSession.IsRideAccepted(SplashActivity.this)) {
+                    if (!CurrentUser.IsDriver(SplashActivity.this)) {
+                        if (RideSession.IsRideAccepted(SplashActivity.this)) {
                             //TODO: remove "!" from above condition
                             startActivity(new Intent(SplashActivity.this, AcceptRideActivity.class));
                             finish();
                         } else if (RideSession.IsRideInProgress(SplashActivity.this)) {
                                 //TODO: navigate to ride progress driver activity
                         } else {
-                            startActivity(new Intent(SplashActivity.this, MapsActivity.class));
+                            startActivity(new Intent(SplashActivity.this, DriverMapsActivity.class));
                             finish();
                         }
                     } else {
-                        if (!RideSession.IsRideAccepted(SplashActivity.this)) {
-                            //TODO: remove "!" from above condition
-                            // navigate to passenger side ride accepted activity
-                            startActivity(new Intent(SplashActivity.this, AcceptRideActivity.class));
+                        if (RideSession.IsGettingRide(this)) {
+                            startActivity(new Intent(SplashActivity.this, PassengerMapsActivity.class));
                             finish();
                         } else if (RideSession.IsRideInProgress(SplashActivity.this)) {
                             //TODO: navigate to ride progress passenger activity
                         } else {
-                            startActivity(new Intent(SplashActivity.this, GetRideActivity.class));
+                            startActivity(new Intent(SplashActivity.this, PassengerMapsActivity.class));
                             finish();
                         }
                     }

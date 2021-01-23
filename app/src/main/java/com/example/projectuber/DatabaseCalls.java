@@ -11,6 +11,9 @@ import com.example.projectuber.Models.RideProgress;
 import com.example.projectuber.Models.User;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,14 +32,12 @@ public class DatabaseCalls {
     private static final String Rides = "Rides";
     private static final String ProgressRides = "ProgressRides";
     private static final DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(Users);
-    private static final DatabaseReference rideRef = FirebaseDatabase.getInstance().getReference(Rides);
+    public static final DatabaseReference rideRef = FirebaseDatabase.getInstance().getReference(Rides);
     private static final DatabaseReference progressRidesRef = FirebaseDatabase.getInstance().getReference(ProgressRides);
 
 
     public static void setRidesCall(Ride ride, ResponseInterface responseInterface) {
-        String id = rideRef.push().getKey();
-        ride.setId(id);
-        rideRef.child(id).setValue(ride).addOnCompleteListener(task -> {
+        rideRef.child(ride.getId()).setValue(ride).addOnCompleteListener(task -> {
             responseInterface.onResponse(task.isSuccessful());
         }).addOnFailureListener(e -> {
             Log.e(TAG, "onFailure: setRides ", e);
@@ -153,6 +154,37 @@ public class DatabaseCalls {
         });
     }
 
+    public static void isRideAcceptedCall(String id, ResponseInterface responseInterface) {
+        Query query = progressRidesRef.orderByChild("id").equalTo(id);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            while(!snapshot.exists()) {
+                                sleep(1000);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                thread.start();
+                if (snapshot.exists()) {
+                    responseInterface.onResponse(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "onCancelled: " + "isRideAcceptedCall ", error.toException());
+                responseInterface.onError(error.getMessage());
+            }
+        });
+    }
+
     public static void setRideAcceptCall(Ride ride, ResponseInterface responseInterface) {
         removeFromRideCall(ride, new ResponseInterface() {
             @Override
@@ -202,9 +234,13 @@ public class DatabaseCalls {
     }
 
     public static void setRideProgressCall(String id, ResponseInterface responseInterface) {
-                    progressRidesRef.child(id).child("isRideStarted").setValue(true)
+                    progressRidesRef.child(id).child("rideStarted").setValue(true)
                             .addOnCompleteListener(task -> {
-                                responseInterface.onResponse(task.isSuccessful());
+                                progressRidesRef.child(id).child("pickupTimeStamp").setValue(AppHelper.getTimeStamp())
+                                        .addOnCompleteListener(task1 -> responseInterface.onResponse(task1.isSuccessful())).addOnFailureListener(e -> {
+                                            Log.e(TAG, "onFailure: setRideAcceptCall Inner ", e);
+                                            responseInterface.onError(e.getMessage());
+                                        });
                             }).addOnFailureListener(e -> {
                         Log.e(TAG, "onFailure: setRideAcceptCall ", e);
                         responseInterface.onError(e.getMessage());

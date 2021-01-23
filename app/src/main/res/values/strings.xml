@@ -6,4 +6,5 @@
     <string name="PickUp"><b>Pick up: </b></string>
     <string name="dropOf"><b>DropOff: </b></string>
     <string name="somthing_wrong">Oops Something Went wrong</string>
+    <string name="cannot_be_empty">Field Cannot be Empty</string>
 </resources>
