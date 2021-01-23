@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.projectuber.DatabaseCalls;
+import com.example.projectuber.Maps.PassengerMapsActivity;
 import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Models.User;
@@ -108,7 +109,7 @@ public class GetingCredentialsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Object... params) {
                     if ((boolean) params[0]) {
-                        startActivity(new Intent(GetingCredentialsActivity.this, GetRideActivity.class));
+                        startActivity(new Intent(GetingCredentialsActivity.this, PassengerMapsActivity.class));
                         finish();
                     } else {
                         AppHelper.showSnackBar(findViewById(android.R.id.content), "Something Went Wrong Please try again");

@@ -62,14 +62,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.projectuber.Utils.AppHelper.decodePoly;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
+public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
-    //    private ImageView imageView_search;
-//    private EditText editText_search;
     public static final int PERMISSIONS_REQUEST_ENABLE_GPS = 111;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 222;
     public static final int ERROR_DIALOG_REQUEST = 333;
-    private static final String TAG = "MapsActivity";
+    private static final String TAG = "DriverMapsActivity";
     private GoogleMap mMap;
     private RecyclerView recyclerView;
     private TextView textView;
@@ -87,8 +85,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-//        editText_search=findViewById(R.id.et_search_MapActivity);
-//        imageView_search=findViewById(R.id.iv_search_mapActivity);
         recyclerView = findViewById(R.id.map_recyclerView);
         textView = findViewById(R.id.tv_map);
         cardView = findViewById(R.id.cv_map);
@@ -101,24 +97,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         api = retrofit.create(API.class);
         latLngList = new ArrayList<>();
         legsList = new ArrayList<>();
-
-
-//        imageView_search.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//               /* if(search_et_is_visible)
-//                {
-//                    //invoke search method  here,
-//                    editText_search.setVisibility(View.INVISIBLE);
-//                    search_et_is_visible=false;
-//                }
-//                else {
-//                    editText_search.setVisibility(View.VISIBLE);
-//                    search_et_is_visible=true;
-//                    editText_search.requestFocus();
-//                }*/
-//            }
-//        });
 
     }
 
@@ -264,9 +242,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResponse(Object... params) {
                 if ((boolean) params[0]) {
-                    RideSession.setRideAccepted(MapsActivity.this, true);
-                    RideSession.setRideModel(MapsActivity.this, (RideProgress) params[1]);
-                    startActivity(new Intent(MapsActivity.this, AcceptRideActivity.class));
+                    RideSession.setRideAccepted(DriverMapsActivity.this, true);
+                    RideSession.setRideModel(DriverMapsActivity.this, (RideProgress) params[1]);
+                    startActivity(new Intent(DriverMapsActivity.this, AcceptRideActivity.class));
                 } else {
                     AppHelper.showSnackBar(findViewById(android.R.id.content), getString(R.string.somthing_wrong));
                 }

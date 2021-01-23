@@ -13,6 +13,8 @@ public class RideSession {
     private static final String rideInProgress = "in_progress";
     private static final String rideAccepted = "ride_accepted";
     private static final String rideModel = "ride_model";
+    private static final String progressRideModel = "progressRide_model";
+    private static final String gettingRide = "getting_ride";
 
     public static void setRideInProgress(Context context, boolean isRideStarted) {
         SharedPreferences.Editor sharedPref = context.getSharedPreferences(RIDE_SESSION,
@@ -26,6 +28,20 @@ public class RideSession {
         SharedPreferences sharedPref = context.getSharedPreferences(RIDE_SESSION,
                 Context.MODE_PRIVATE);
         return sharedPref.getBoolean(rideInProgress, false);
+    }
+
+    public static void setGettingRide(Context context, boolean isGettingRide) {
+        SharedPreferences.Editor sharedPref = context.getSharedPreferences(RIDE_SESSION,
+                Context.MODE_PRIVATE).edit();
+        sharedPref.putBoolean(gettingRide, isGettingRide);
+        sharedPref.apply();
+
+    }
+
+    public static boolean IsGettingRide(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(RIDE_SESSION,
+                Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(gettingRide, false);
     }
 
     public static void setRideAccepted(Context context, boolean isRideAccepted) {
@@ -47,7 +63,7 @@ public class RideSession {
                 Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
         String json = gson.toJson(ride);
-        sharedPref.putString(rideModel, json);
+        sharedPref.putString(progressRideModel, json);
         sharedPref.apply();
 
     }
@@ -56,7 +72,25 @@ public class RideSession {
         SharedPreferences sharedPref = context.getSharedPreferences(RIDE_SESSION,
                 Context.MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = sharedPref.getString(rideModel, "");
+        String json = sharedPref.getString(progressRideModel, "");
         return gson.fromJson(json, RideProgress.class);
+    }
+
+    public static void setUserRideModel(Context context, Ride ride) {
+        SharedPreferences.Editor sharedPref = context.getSharedPreferences(RIDE_SESSION,
+                Context.MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(ride);
+        sharedPref.putString(rideModel, json);
+        sharedPref.apply();
+
+    }
+
+    public static Ride getUserRideModel(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(RIDE_SESSION,
+                Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPref.getString(rideModel, "");
+        return gson.fromJson(json, Ride.class);
     }
 }

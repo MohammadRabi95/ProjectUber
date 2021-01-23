@@ -7,17 +7,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.Interfaces.ResponseInterface;
-import com.example.projectuber.Models.Ride;
 import com.example.projectuber.Models.RideProgress;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.RideSession;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.github.clans.fab.FloatingActionButton;
 
 public class AcceptRideActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -98,7 +96,8 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
                     RideSession.setRideInProgress(AcceptRideActivity.this, true);
                     ride.setRideStarted(true);
                     RideSession.setRideModel(AcceptRideActivity.this, ride);
-                    // navigate to ride progress activity
+                    startActivity(new Intent(AcceptRideActivity.this, ProgressRideActivity.class));
+                    finish();
                 } else {
                     AppHelper.showSnackBar(findViewById(android.R.id.content),
                             getString(R.string.somthing_wrong));
