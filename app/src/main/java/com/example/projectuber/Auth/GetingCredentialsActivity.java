@@ -16,6 +16,7 @@ import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Models.User;
 import com.example.projectuber.R;
+import com.example.projectuber.SelectModeActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.google.android.material.textfield.TextInputEditText;
@@ -109,7 +110,7 @@ public class GetingCredentialsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Object... params) {
                     if ((boolean) params[0]) {
-                        startActivity(new Intent(GetingCredentialsActivity.this, PassengerMapsActivity.class));
+                        startActivity(new Intent(GetingCredentialsActivity.this, SelectModeActivity.class));
                         finish();
                     } else {
                         AppHelper.showSnackBar(findViewById(android.R.id.content), "Something Went Wrong Please try again");

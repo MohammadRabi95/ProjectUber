@@ -192,6 +192,7 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/accept_btn"
         android:text="Get Ride"
+        android:textColor="@color/white"
         android:textAllCaps="false"
         android:id="@+id/btn_getride"
         />

@@ -16,6 +16,7 @@ import com.example.projectuber.Maps.PassengerMapsActivity;
 import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.R;
+import com.example.projectuber.SelectModeActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.google.firebase.FirebaseException;
@@ -152,7 +153,7 @@ public class ReceivedOTPActivity extends AppCompatActivity {
                 public void onResponse(Object... params) {
                     Intent intent;
                     if ((boolean) params[0]) {
-                        intent = new Intent(ReceivedOTPActivity.this, PassengerMapsActivity.class);
+                        intent = new Intent(ReceivedOTPActivity.this, SelectModeActivity.class);
                     } else {
                         intent = new Intent(ReceivedOTPActivity.this, GetingCredentialsActivity.class);
                     }

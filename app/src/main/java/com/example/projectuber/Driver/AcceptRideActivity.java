@@ -85,7 +85,11 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void openGoogleMapsForRoute() {
-
+        String origin = ride.getPickup_latitude() + "," + ride.getPickup_longitude();
+        String destination = ride.getDropOff_latitude() + "," + ride.getDropOff_longitude();
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?saddr=" + origin + "&daddr=" + destination));
+        startActivity(intent);
     }
 
     private void onRideStarted() {

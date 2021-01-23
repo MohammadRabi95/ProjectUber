@@ -299,9 +299,6 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                         String s = legsList.get(0).getDistance().getText();
                         String s1 = legsList.get(0).getDuration().getText();
                         String s2 = AppHelper.calculateFairs(distance, duration) + " $";
-
-                        showTripDetailsBottomSheet(s, s1, s2, pickup_location, dropOff_location,
-                                orig.latitude, orig.longitude, dest.latitude, dest.longitude);
                         polylineOptions = new PolylineOptions();
                         polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
                                 R.color.black));
@@ -314,9 +311,9 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                         builder.include(orig);
                         builder.include(dest);
                         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 85));
-
+                        showTripDetailsBottomSheet(s, s1, s2, pickup_location, dropOff_location,
+                                orig.latitude, orig.longitude, dest.latitude, dest.longitude);
                     }
-
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "onError: ", e);
@@ -416,9 +413,12 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
 
             });
         }
+        mMap.setOnMapClickListener(latLng -> {
+            bottomSheetDialog.show();
+        });
         bottomSheetDialog.setContentView(bottomSheetView);
-        bottomSheetDialog.setCancelable(false);
-        bottomSheetDialog.setCanceledOnTouchOutside(false);
+        //bottomSheetDialog.setCancelable(false);
+        //bottomSheetDialog.setCanceledOnTouchOutside(false);
         bottomSheetDialog.show();
     }
 
