@@ -84,7 +84,7 @@ public class GetingCredentialsActivity extends AppCompatActivity {
             });
             builder.show();
             editText_password.requestFocus();
-        } else if (editText_email.getText().toString().contains(".") || editText_email.getText().toString().contains("@") || editText_email.getText().toString().contains("com")) {
+        } else if (!editText_email.getText().toString().contains(".") || !editText_email.getText().toString().contains("@") || !editText_email.getText().toString().contains("com")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Alert");
             builder.setMessage("Email formatting is incorrect.\nEmail must contain '.' , '@' , 'com'.");

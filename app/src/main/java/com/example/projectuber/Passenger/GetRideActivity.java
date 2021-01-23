@@ -13,7 +13,7 @@ public class GetRideActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ridectivity);
-        
+
         Toast.makeText(this, "Work in Progress", Toast.LENGTH_SHORT).show();
 
     }

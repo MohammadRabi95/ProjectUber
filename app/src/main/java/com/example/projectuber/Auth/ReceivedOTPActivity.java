@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.projectuber.DatabaseCalls;
+import com.example.projectuber.Maps.PassengerMapsActivity;
 import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.R;
@@ -151,7 +152,7 @@ public class ReceivedOTPActivity extends AppCompatActivity {
                 public void onResponse(Object... params) {
                     Intent intent;
                     if ((boolean) params[0]) {
-                        intent = new Intent(ReceivedOTPActivity.this, GetRideActivity.class);
+                        intent = new Intent(ReceivedOTPActivity.this, PassengerMapsActivity.class);
                     } else {
                         intent = new Intent(ReceivedOTPActivity.this, GetingCredentialsActivity.class);
                     }
