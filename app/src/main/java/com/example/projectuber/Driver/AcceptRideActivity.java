@@ -13,6 +13,7 @@ import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Models.RideProgress;
 import com.example.projectuber.R;
+import com.example.projectuber.SelectModeActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.RideSession;
 import com.github.clans.fab.FloatingActionButton;
@@ -72,7 +73,14 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_rideStart:
-                onRideStarted();
+                System.out.println("IsRideInProgress ================= " + RideSession.IsRideInProgress(this));
+                System.out.println("IsRideAccepted ================= " + RideSession.IsRideAccepted(this));
+
+                if (RideSession.IsRideInProgress(this)) {
+                        onRideFinished();
+                    } else if (RideSession.IsRideAccepted(this)){
+                        onRideStarted();
+                    }
                 break;
             case R.id.fab_call:
                 startActivity(new Intent(Intent.ACTION_DIAL,
@@ -84,6 +92,25 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    private void onRideFinished() {
+        DatabaseCalls.setRideCompletedCall(this, ride, new ResponseInterface() {
+            @Override
+            public void onResponse(Object... params) {
+                if (!((boolean) params[0])) {
+                    AppHelper.showSnackBar(findViewById(android.R.id.content),
+                            getString(R.string.somthing_wrong));
+                }
+                RideSession.resetRideSession(AcceptRideActivity.this);
+                startActivity(new Intent(AcceptRideActivity.this, SelectModeActivity.class));
+                finish();
+            }
+            @Override
+            public void onError(String error) {
+                AppHelper.showSnackBar(findViewById(android.R.id.content), error);
+            }
+        });
+    }
+
     private void openGoogleMapsForRoute() {
         String origin = ride.getPickup_latitude() + "," + ride.getPickup_longitude();
         String destination = ride.getDropOff_latitude() + "," + ride.getDropOff_longitude();
@@ -93,15 +120,15 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void onRideStarted() {
-        DatabaseCalls.setRideProgressCall(ride.getId(), new ResponseInterface() {
+        DatabaseCalls.setRideProgressCall(this, ride.getId(), new ResponseInterface() {
             @Override
             public void onResponse(Object... params) {
                 if ((boolean) params[0]) {
+                    RideSession.setRideAccepted(AcceptRideActivity.this, false);
                     RideSession.setRideInProgress(AcceptRideActivity.this, true);
                     ride.setRideStarted(true);
                     RideSession.setRideModel(AcceptRideActivity.this, ride);
-                    startActivity(new Intent(AcceptRideActivity.this, ProgressRideActivity.class));
-                    finish();
+                    start_btn.setText("End Ride");
                 } else {
                     AppHelper.showSnackBar(findViewById(android.R.id.content),
                             getString(R.string.somthing_wrong));

@@ -28,17 +28,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-
-        <TextView
-            android:singleLine="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Pick Up Location"
-            android:padding="10dp"
-            android:background="@color/white"
-            android:id="@+id/pick_et"
-            />
-
         <fragment
             android:id="@+id/pick_fragment"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
@@ -61,16 +50,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-
-        <TextView
-            android:singleLine="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Drop Off Location"
-            android:padding="10dp"
-            android:background="@color/white"
-            android:id="@+id/drop_et"
-            />
          <fragment
             android:id="@+id/drop_fragment"
              android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
@@ -88,6 +67,7 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/accept_btn"
         android:text="Next"
+        android:textColor="@color/white"
         android:textAllCaps="false"
         android:id="@+id/btn_next"
         />

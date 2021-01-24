@@ -18,7 +18,7 @@
         <activity android:name=".SelectModeActivity"></activity>
         <activity android:name=".Driver.ProgressRideActivity" />
         <activity android:name=".Maps.PassengerMapsActivity" />
-        <activity android:name=".Passenger.GetRideActivity" />
+        <activity android:name=".Passenger.MyRideActivity" />
         <activity
             android:name=".Auth.GetingCredentialsActivity"
             android:windowSoftInputMode="stateUnchanged" />

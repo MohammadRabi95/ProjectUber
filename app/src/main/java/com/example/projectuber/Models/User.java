@@ -1,7 +1,7 @@
 package com.example.projectuber.Models;
 
 public class User {
-    private String id, name, phone, password, email;
+    private String id, name, phone, email;
 
     public User() {
     }
@@ -28,14 +28,6 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {

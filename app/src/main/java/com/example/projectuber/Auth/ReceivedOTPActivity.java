@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.projectuber.DatabaseCalls;
-import com.example.projectuber.Maps.PassengerMapsActivity;
-import com.example.projectuber.Passenger.GetRideActivity;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.R;
 import com.example.projectuber.SelectModeActivity;
@@ -148,7 +146,7 @@ public class ReceivedOTPActivity extends AppCompatActivity {
 
     private void saveUser() {
         if (AppHelper.isUserAvailable()) {
-            DatabaseCalls.isUserSavedCall(CurrentUser.getUserId(), new ResponseInterface() {
+            DatabaseCalls.isUserSavedCall(this, CurrentUser.getUserId(), new ResponseInterface() {
                 @Override
                 public void onResponse(Object... params) {
                     Intent intent;

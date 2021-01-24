@@ -25,12 +25,13 @@
         </LinearLayout>
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:cardElevation="10dp"
+
             app:cardCornerRadius="10dp">
             <TextView
-                android:text="Ali Raza"
+                android:padding="8dp"
                 android:textSize="20dp"
                 android:id="@+id/pick_btm"
                 android:layout_width="match_parent"
@@ -61,12 +62,12 @@
         </LinearLayout>
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:cardElevation="10dp"
             app:cardCornerRadius="10dp">
             <TextView
-                android:text="Ali Raza"
+                android:padding="8dp"
                 android:textSize="20dp"
                 android:id="@+id/drop_btm"
                 android:layout_width="match_parent"
@@ -97,12 +98,12 @@
         </LinearLayout>
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:cardElevation="10dp"
             app:cardCornerRadius="10dp">
             <TextView
-                android:text="Ali Raza"
+                android:padding="8dp"
                 android:textSize="20dp"
                 android:id="@+id/distance_btm"
                 android:layout_width="match_parent"
@@ -133,12 +134,12 @@
         </LinearLayout>
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:cardElevation="10dp"
             app:cardCornerRadius="10dp">
             <TextView
-                android:text="Ali Raza"
+                android:padding="8dp"
                 android:textSize="20dp"
                 android:id="@+id/duration_btm"
                 android:layout_width="match_parent"
@@ -169,12 +170,12 @@
         </LinearLayout>
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:cardElevation="10dp"
             app:cardCornerRadius="10dp">
             <TextView
-                android:text="Ali Raza"
+                android:padding="8dp"
                 android:textSize="20dp"
                 android:id="@+id/price_btm"
                 android:layout_width="match_parent"

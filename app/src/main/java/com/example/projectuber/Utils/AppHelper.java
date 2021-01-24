@@ -1,10 +1,15 @@
 package com.example.projectuber.Utils;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.View;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
+import com.example.projectuber.R;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import dmax.dialog.SpotsDialog;
 
 public class AppHelper {
 
@@ -40,7 +47,7 @@ public class AppHelper {
     }
 
     public static String getTimeStamp() {
-    SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
+    SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy--hh:mm");
         return s.format(new Date());
     }
 
@@ -75,5 +82,10 @@ public class AppHelper {
             poly.add(p);
         }
         return poly;
+    }
+
+
+    public static SpotsDialog showLoadingDialog(Context context) {
+        return new SpotsDialog(context, R.style.Custom);
     }
 }

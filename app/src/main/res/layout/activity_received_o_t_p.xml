@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Auth.ReceivedOTPActivity">
 
     <ImageView
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/tv_title_input_enter_number_SinginActivty"
             android:textSize="25sp"
-            android:text="Enter the 4-digit code sent to you at"
+            android:text="Enter the code sent to you at"
             android:textColor="@color/black"
             />
 
@@ -70,6 +71,7 @@
         android:id="@+id/btn_next_OTPActivity"
         android:text="Next"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
         android:background="@color/black"
