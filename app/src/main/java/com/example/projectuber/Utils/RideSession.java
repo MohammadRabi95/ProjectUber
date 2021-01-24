@@ -3,6 +3,7 @@ package com.example.projectuber.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.projectuber.Driver.AcceptRideActivity;
 import com.example.projectuber.Models.Ride;
 import com.example.projectuber.Models.RideProgress;
 import com.google.gson.Gson;
@@ -92,5 +93,14 @@ public class RideSession {
         Gson gson = new Gson();
         String json = sharedPref.getString(rideModel, "");
         return gson.fromJson(json, Ride.class);
+    }
+
+    public static void resetRideSession(Context context) {
+        RideSession.setRideAccepted(context, false);
+        RideSession.setRideInProgress(context, false);
+        CurrentUser.setDrivingMode(context, false);
+        RideSession.setRideModel(context, null);
+        RideSession.setUserRideModel(context, null);
+        RideSession.setGettingRide(context, false);
     }
 }

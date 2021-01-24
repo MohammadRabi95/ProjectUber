@@ -21,6 +21,9 @@ public class RideProgress {
     private String price;
     private boolean isRideStarted;
 
+    public RideProgress() {
+    }
+
     public String getDistance() {
         return distance;
     }
@@ -171,8 +174,5 @@ public class RideProgress {
 
     public void setPickupTimeStamp(String pickupTimeStamp) {
         this.pickupTimeStamp = pickupTimeStamp;
-    }
-
-    public RideProgress() {
     }
 }

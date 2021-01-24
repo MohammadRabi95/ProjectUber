@@ -2,12 +2,9 @@ package com.example.projectuber.Maps;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -22,14 +19,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Models.Ride;
-import com.example.projectuber.Passenger.GetRideActivity;
+import com.example.projectuber.Passenger.MyRideActivity;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
@@ -39,7 +35,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -62,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -79,6 +75,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 222;
     public static final int ERROR_DIALOG_REQUEST = 333;
     private static final String TAG = "PassengerMapsActivity";
+    private SpotsDialog spotsDialog;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean mLocationPermissionGranted = false;
@@ -88,22 +85,18 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     private List<Legs> legsList;
     private LatLng pick_ltln, drop_ltln;
     private Ride ride;
-    private TextView pickup_et, dropOff_et;
     private AutocompleteSupportFragment pick_frag, drop_frag;
-    private Button next_btn;
-    private PlacesClient placesClient;
+    private String p_loc = "", d_loc = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger_maps);
-        pickup_et = findViewById(R.id.pick_et);
-        dropOff_et = findViewById(R.id.drop_et);
-        next_btn = findViewById(R.id.btn_next);
+        Button next_btn = findViewById(R.id.btn_next);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         initializeMyPlaces();
-
+        spotsDialog = AppHelper.showLoadingDialog(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
@@ -116,8 +109,6 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
         if (RideSession.IsGettingRide(this)) {
             ride = RideSession.getUserRideModel(this);
             next_btn.setVisibility(View.GONE);
-            pickup_et.setText(ride.getPickup_location());
-            dropOff_et.setText(ride.getDropOff_location());
             pick_frag.setText(ride.getPickup_location());
             drop_frag.setText(ride.getDropOff_location());
             String origin = ride.getPickup_latitude() + "," + ride.getPickup_longitude();
@@ -132,8 +123,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                 if (validate()) {
                     String origin = pick_ltln.latitude + "," + pick_ltln.longitude;
                     String dest = drop_ltln.latitude + "," + drop_ltln.longitude;
-                    retrofitCall(origin, dest, pick_ltln, drop_ltln, pickup_et.getText().toString(),
-                            dropOff_et.getText().toString());
+                    retrofitCall(origin, dest, pick_ltln, drop_ltln, p_loc, d_loc);
                 }
             });
         }
@@ -204,9 +194,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
 
     public boolean isServicesOK() {
         Log.d(TAG, "isServicesOK: checking google services version");
-
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-
         if (available == ConnectionResult.SUCCESS) {
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
@@ -238,13 +226,11 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: called.");
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if (mLocationPermissionGranted) {
-                    getCurrentLocation();
-                } else {
-                    getLocationPermission();
-                }
+        if (requestCode == PERMISSIONS_REQUEST_ENABLE_GPS) {
+            if (mLocationPermissionGranted) {
+                getCurrentLocation();
+            } else {
+                getLocationPermission();
             }
         }
     }
@@ -277,12 +263,14 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
 
     private void retrofitCall(String origin, String destination, LatLng orig, LatLng dest,
                               String pickup_location, String dropOff_location) {
+        spotsDialog.show();
         api.getDirection("driving", "less_driving",
                 origin, destination, getString(R.string.google_maps_key))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Result>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        spotsDialog.dismiss();
                     }
 
                     @Override
@@ -313,10 +301,13 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 85));
                         showTripDetailsBottomSheet(s, s1, s2, pickup_location, dropOff_location,
                                 orig.latitude, orig.longitude, dest.latitude, dest.longitude);
+
                     }
+
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "onError: ", e);
+                        spotsDialog.dismiss();
                     }
                 });
     }
@@ -340,11 +331,12 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
         dropoff_tv.setText(dropoff);
 
         if (RideSession.IsGettingRide(this)) {
-            DatabaseCalls.isRideAcceptedCall(ride.getId(), new ResponseInterface() {
+            DatabaseCalls.isRideAcceptedCall(this, ride.getId(), new ResponseInterface() {
                 @Override
                 public void onResponse(Object... params) {
                     if ((boolean) params[0]) {
-                        startActivity(new Intent(PassengerMapsActivity.this, GetRideActivity.class));
+                        startActivity(new Intent(PassengerMapsActivity.this, MyRideActivity.class));
+                        finish();
                     } else {
                         AppHelper.showSnackBar(findViewById(android.R.id.content),
                                 getString(R.string.somthing_wrong));
@@ -363,8 +355,9 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
 
                 ride.setDistance(distance);
                 ride.setDuration(duration);
-                ride.setName(CurrentUser.getName());
+                ride.setName(CurrentUser.getName(this));
                 ride.setPrice(price);
+                ride.setUserId(CurrentUser.getUserId());
                 ride.setPickup_location(pickup);
                 ride.setDropOff_location(dropoff);
                 ride.setId(CurrentUser.getUserId());
@@ -377,17 +370,18 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                 String id = rideRef.push().getKey();
                 ride.setId(id);
 
-                DatabaseCalls.setRidesCall(ride, new ResponseInterface() {
+                DatabaseCalls.setRidesCall(this, ride, new ResponseInterface() {
                     @Override
                     public void onResponse(Object... params) {
                         if ((boolean) params[0]) {
                             RideSession.setGettingRide(PassengerMapsActivity.this, true);
                             RideSession.setUserRideModel(PassengerMapsActivity.this, ride);
-                            DatabaseCalls.isRideAcceptedCall(id, new ResponseInterface() {
+                            DatabaseCalls.isRideAcceptedCall(PassengerMapsActivity.this, id, new ResponseInterface() {
                                 @Override
                                 public void onResponse(Object... params) {
                                     if ((boolean) params[0]) {
-                                        startActivity(new Intent(PassengerMapsActivity.this, GetRideActivity.class));
+                                        startActivity(new Intent(PassengerMapsActivity.this, MyRideActivity.class));
+                                        finish();
                                     } else {
                                         AppHelper.showSnackBar(findViewById(android.R.id.content),
                                                 getString(R.string.somthing_wrong));
@@ -419,17 +413,16 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
         bottomSheetDialog.setContentView(bottomSheetView);
         //bottomSheetDialog.setCancelable(false);
         //bottomSheetDialog.setCanceledOnTouchOutside(false);
+        spotsDialog.dismiss();
         bottomSheetDialog.show();
     }
 
     private boolean validate() {
-        if (pickup_et.getText().toString().isEmpty()) {
-            pickup_et.setError(getString(R.string.cannot_be_empty));
-            pickup_et.requestFocus();
+        if ("".equals(p_loc)) {
+            AppHelper.showSnackBar(findViewById(android.R.id.content), getString(R.string.cannot_be_empty));
             return false;
-        } else if (dropOff_et.getText().toString().isEmpty()) {
-            dropOff_et.setError(getString(R.string.cannot_be_empty));
-            dropOff_et.requestFocus();
+        } else if ("".equals(d_loc)) {
+            AppHelper.showSnackBar(findViewById(android.R.id.content), getString(R.string.cannot_be_empty));
             return false;
         }
         return true;
@@ -443,22 +436,20 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
         }
-        placesClient = Places.createClient(PassengerMapsActivity.this);
-
-        pick_frag.setCountries("US");
+        PlacesClient placesClient = Places.createClient(PassengerMapsActivity.this);
+        
         pick_frag.setHint("Pickup");
         pick_frag.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
 
-        drop_frag.setCountries("US");
         drop_frag.setHint("Drop Off");
         drop_frag.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
 
         pick_frag.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-            pick_ltln = place.getLatLng();
-            pick_frag.setText(place.getAddress());
-            pickup_et.setText(place.getAddress());
+                pick_ltln = place.getLatLng();
+                pick_frag.setText(place.getAddress());
+                p_loc = place.getAddress();
             }
 
             @Override
@@ -473,7 +464,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
             public void onPlaceSelected(@NonNull Place place) {
                 drop_ltln = place.getLatLng();
                 drop_frag.setText(place.getAddress());
-                dropOff_et.setText(place.getAddress());
+                d_loc = place.getAddress();
             }
 
             @Override

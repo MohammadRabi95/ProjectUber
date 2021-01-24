@@ -238,7 +238,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
 
     @Override
     public void onRideAccepted(Ride ride) {
-        DatabaseCalls.setRideAcceptCall(ride, new ResponseInterface() {
+        DatabaseCalls.setRideAcceptCall(DriverMapsActivity.this, ride, new ResponseInterface() {
             @Override
             public void onResponse(Object... params) {
                 if ((boolean) params[0]) {
@@ -280,7 +280,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     private void getRides() {
-        DatabaseCalls.getRidesCall(new ResponseInterface() {
+        DatabaseCalls.getRidesCall(this, new ResponseInterface() {
             @Override
             public void onResponse(Object... params) {
                 setAdapter((List<Ride>) params[0]);

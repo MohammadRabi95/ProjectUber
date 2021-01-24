@@ -9,9 +9,8 @@ import android.os.Looper;
 
 import com.example.projectuber.Auth.SignInActivity;
 import com.example.projectuber.Driver.AcceptRideActivity;
-import com.example.projectuber.Maps.DriverMapsActivity;
 import com.example.projectuber.Maps.PassengerMapsActivity;
-import com.example.projectuber.Passenger.GetRideActivity;
+import com.example.projectuber.Passenger.MyRideActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.example.projectuber.Utils.RideSession;
@@ -42,7 +41,8 @@ public class SplashActivity extends AppCompatActivity {
                             startActivity(new Intent(SplashActivity.this, PassengerMapsActivity.class));
                             finish();
                         } else if (RideSession.IsRideInProgress(SplashActivity.this)) {
-                            //TODO: navigate to ride progress passenger activity
+                            startActivity(new Intent(SplashActivity.this, MyRideActivity.class));
+                            finish();
                         } else {
                             startActivity(new Intent(SplashActivity.this, SelectModeActivity.class));
                             finish();
@@ -56,6 +56,6 @@ public class SplashActivity extends AppCompatActivity {
             } else {
                 AppHelper.showSnackBar(findViewById(android.R.id.content), "No Internet Connection");
             }
-        },2000);
+        },1000);
     }
 }
