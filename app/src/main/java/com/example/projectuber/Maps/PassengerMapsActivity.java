@@ -30,6 +30,7 @@ import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.example.projectuber.Utils.RideSession;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.Status;
@@ -44,6 +45,7 @@ import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -68,6 +70,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.projectuber.DatabaseCalls.rideRef;
 import static com.example.projectuber.Utils.AppHelper.decodePoly;
+import static com.example.projectuber.Utils.Constants.polyLineWidth;
 
 public class PassengerMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -85,17 +88,21 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     private List<Legs> legsList;
     private LatLng pick_ltln, drop_ltln;
     private Ride ride;
+    private FloatingActionButton current_loc;
     private AutocompleteSupportFragment pick_frag, drop_frag;
     private String p_loc = "", d_loc = "";
+    private Polyline polyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger_maps);
         Button next_btn = findViewById(R.id.btn_next);
+        current_loc = findViewById(R.id.fab_current_loc);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         initializeMyPlaces();
+        fabClick();
         spotsDialog = AppHelper.showLoadingDialog(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         assert mapFragment != null;
@@ -254,6 +261,10 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     }
 
     private void setMapData(Location location) {
+        mMap.clear();
+        if (polyline != null) {
+            polyline.remove();
+        }
         if (mLocationPermissionGranted) {
             LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(loc).title("Current Location"));
@@ -282,6 +293,9 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                             legsList.addAll(route.getLegs());
                         }
 
+                        if (polyline != null) {
+                            polyline.remove();
+                        }
                         float distance = legsList.get(0).getDistance().getValue() / 1000;
                         float duration = legsList.get(0).getDuration().getValue() / 60;
                         String s = legsList.get(0).getDistance().getText();
@@ -290,11 +304,11 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                         polylineOptions = new PolylineOptions();
                         polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
                                 R.color.black));
-                        polylineOptions.width(20);
+                        polylineOptions.width(polyLineWidth);
                         polylineOptions.startCap(new ButtCap());
                         polylineOptions.jointType(JointType.ROUND);
                         polylineOptions.addAll(latLngList);
-                        mMap.addPolyline(polylineOptions);
+                        polyline = mMap.addPolyline(polylineOptions);
                         LatLngBounds.Builder builder = new LatLngBounds.Builder();
                         builder.include(orig);
                         builder.include(dest);
@@ -335,7 +349,8 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                 @Override
                 public void onResponse(Object... params) {
                     if ((boolean) params[0]) {
-                        startActivity(new Intent(PassengerMapsActivity.this, MyRideActivity.class));
+                        startActivity(new Intent(PassengerMapsActivity.this,
+                                MyRideActivity.class).putExtra("id", ride.getId()));
                         finish();
                     } else {
                         AppHelper.showSnackBar(findViewById(android.R.id.content),
@@ -380,7 +395,8 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                                 @Override
                                 public void onResponse(Object... params) {
                                     if ((boolean) params[0]) {
-                                        startActivity(new Intent(PassengerMapsActivity.this, MyRideActivity.class));
+                                        startActivity(new Intent(PassengerMapsActivity.this,
+                                                MyRideActivity.class).putExtra("id", ride.getId()));
                                         finish();
                                     } else {
                                         AppHelper.showSnackBar(findViewById(android.R.id.content),
@@ -437,7 +453,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
             Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
         }
         PlacesClient placesClient = Places.createClient(PassengerMapsActivity.this);
-        
+
         pick_frag.setHint("Pickup");
         pick_frag.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
 
@@ -472,6 +488,16 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                 Log.e(TAG, "onError: DropOff " + status);
                 AppHelper.showSnackBar(findViewById(android.R.id.content), status.getStatusMessage());
             }
+        });
+    }
+
+    private void fabClick() {
+        current_loc.setOnClickListener(view -> {
+            if (mLocationPermissionGranted) {
+                getCurrentLocation();
+                return;
+            }
+            getLocationPermission();
         });
     }
 }

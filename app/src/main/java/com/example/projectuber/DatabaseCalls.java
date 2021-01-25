@@ -33,9 +33,9 @@ public class DatabaseCalls {
 
     private static final String Users = "Users";
     private static final String Rides = "Rides";
+    public static final DatabaseReference rideRef = FirebaseDatabase.getInstance().getReference(Rides);
     private static final String ProgressRides = "ProgressRides";
     private static final String CompletedRides = "CompletedRides";
-    public static final DatabaseReference rideRef = FirebaseDatabase.getInstance().getReference(Rides);
     private static final DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(Users);
     private static final DatabaseReference progressRidesRef = FirebaseDatabase.getInstance().getReference(ProgressRides);
     private static final DatabaseReference completedRidesRef = FirebaseDatabase.getInstance().getReference(CompletedRides);
@@ -107,7 +107,7 @@ public class DatabaseCalls {
                 if (snapshot.exists()) {
                     User user = snapshot.getValue(User.class);
                     if (user != null) {
-                       CurrentUser.setName(context, user.getName());
+                        CurrentUser.setName(context, user.getName());
                     }
                 }
             }
@@ -141,8 +141,7 @@ public class DatabaseCalls {
         });
     }
 
-    public static void removeFromRideProgressCall(RideProgress rideProgress,
-                                                  ResponseInterface responseInterface) {
+    private static void removeFromRideProgressCall(RideProgress rideProgress, ResponseInterface responseInterface) {
         progressRidesRef.child(rideProgress.getId()).removeValue().addOnCompleteListener(task -> {
             responseInterface.onResponse(task.isSuccessful());
         }).addOnFailureListener(e -> {
@@ -220,6 +219,54 @@ public class DatabaseCalls {
             public void onCancelled(@NonNull DatabaseError error) {
                 dialog.dismiss();
                 Log.e(TAG, "onCancelled: " + "isRideAcceptedCall ", error.toException());
+                responseInterface.onError(error.getMessage());
+            }
+        });
+    }
+
+    public static void isRideStartedCall(Context context, String id, ResponseInterface responseInterface) {
+        SpotsDialog dialog = AppHelper.showLoadingDialog(context);
+        dialog.show();
+        Query query = progressRidesRef.orderByChild("id").equalTo(id);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    RideProgress progress = snapshot.getValue(RideProgress.class);
+                    if (progress != null) {
+                        if (progress.isRideStarted())
+                            responseInterface.onResponse(progress);
+                        dialog.dismiss();
+                    }
+                } else {
+                    dialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                dialog.dismiss();
+                Log.e(TAG, "onCancelled: " + "isRideStartedCall ", error.toException());
+                responseInterface.onError(error.getMessage());
+            }
+        });
+    }
+
+    public static void isRideCompletedCall(Context context, String id, ResponseInterface responseInterface) {
+        SpotsDialog dialog = AppHelper.showLoadingDialog(context);
+        dialog.show();
+        Query query = completedRidesRef.orderByChild("id").equalTo(id);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                responseInterface.onResponse(snapshot.exists());
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                dialog.dismiss();
+                Log.e(TAG, "onCancelled: " + "isRideStartedCall ", error.toException());
                 responseInterface.onError(error.getMessage());
             }
         });
@@ -303,27 +350,23 @@ public class DatabaseCalls {
 
     private static void removeFromRideCall(Ride ride, ResponseInterface responseInterface) {
         rideRef.child(ride.getId()).removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                responseInterface.onResponse(true);
-            } else {
-                responseInterface.onResponse(false);
-            }
+            responseInterface.onResponse(task.isSuccessful());
         }).addOnFailureListener(e -> {
             Log.e(TAG, "onFailure: removeRideCall ", e);
             responseInterface.onError(e.getMessage());
         });
     }
 
-    public static void getMyCompletedRidesAsDiverCall(Context context, ResponseInterface responseInterface) {
+    public static void getMyCompletedRidesCall(Context context, String param, ResponseInterface responseInterface) {
         SpotsDialog dialog = AppHelper.showLoadingDialog(context);
         dialog.show();
         List<CompletedRide> completedRideList = new ArrayList<>();
-        Query query = completedRidesRef.orderByChild("driverId").equalTo(CurrentUser.getUserId());
+        Query query = completedRidesRef.orderByChild(param).equalTo(CurrentUser.getUserId());
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         if (dataSnapshot.exists()) {
                             CompletedRide completedRide = dataSnapshot.getValue(CompletedRide.class);
                             if (completedRide != null) {
@@ -332,43 +375,14 @@ public class DatabaseCalls {
                         }
                     }
                     responseInterface.onResponse(completedRideList);
-                    dialog.dismiss();
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
                 dialog.dismiss();
-                Log.e(TAG, "onCancelled: getMyCompletedRideAsDiverCall ", error.toException());
-                responseInterface.onError(error.getMessage());
             }
-        });
-    }
 
-    public static void getMyCompletedRidesAsPassengerCall(Context context, ResponseInterface responseInterface) {
-        SpotsDialog dialog = AppHelper.showLoadingDialog(context);
-        dialog.show();
-        List<CompletedRide> completedRideList = new ArrayList<>();
-        Query query = completedRidesRef.orderByChild("passengerId").equalTo(CurrentUser.getUserId());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
-                        if (dataSnapshot.exists()) {
-                            CompletedRide completedRide = dataSnapshot.getValue(CompletedRide.class);
-                            if (completedRide != null) {
-                                completedRideList.add(completedRide);
-                            }
-                        }
-                    }
-                    responseInterface.onResponse(completedRideList);
-                    dialog.dismiss();
-                }
-            }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 dialog.dismiss();
-                Log.e(TAG, "onCancelled: getMyCompletedRideAsPassengerCall ", error.toException());
+                Log.e(TAG, "onCancelled: getMyCompletedRideCall ", error.toException());
                 responseInterface.onError(error.getMessage());
             }
         });
