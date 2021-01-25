@@ -5,7 +5,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Maps.PassengerMapsActivity" >
+    tools:context=".Maps.PassengerMapsActivity">
 
     <fragment
         android:layout_width="match_parent"
@@ -71,5 +71,17 @@
         android:textAllCaps="false"
         android:id="@+id/btn_next"
         />
+
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab_current_loc"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="75dp"
+        map:fab_colorNormal="@color/black"
+        android:src="@drawable/ic_baseline_my_location_24"
+        android:tint="@color/white" />
 
 </RelativeLayout>

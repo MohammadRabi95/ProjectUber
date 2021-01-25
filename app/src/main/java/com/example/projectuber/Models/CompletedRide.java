@@ -20,6 +20,15 @@ public class CompletedRide {
     private String distance;
     private String duration;
     private String price;
+    private String paidVia;
+
+    public String getPaidVia() {
+        return paidVia;
+    }
+
+    public void setPaidVia(String paidVia) {
+        this.paidVia = paidVia;
+    }
 
     public String getDistance() {
         return distance;

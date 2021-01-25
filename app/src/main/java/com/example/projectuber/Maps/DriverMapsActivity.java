@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
@@ -61,6 +62,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.projectuber.Utils.AppHelper.decodePoly;
+import static com.example.projectuber.Utils.Constants.polyLineWidth;
 
 public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCallback, RidesCallback {
 
@@ -78,6 +80,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     private List<LatLng> latLngList;
     private PolylineOptions polylineOptions;
     private List<Legs> legsList;
+    private Polyline polyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,6 +252,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                     AppHelper.showSnackBar(findViewById(android.R.id.content), getString(R.string.somthing_wrong));
                 }
             }
+
             @Override
             public void onError(String error) {
                 AppHelper.showSnackBar(findViewById(android.R.id.content), error);
@@ -310,7 +314,9 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                             latLngList.addAll(decodePoly(polyline));
                             legsList.addAll(route.getLegs());
                         }
-
+                        if (polyline != null) {
+                            polyline.remove();
+                        }
                         float distance = legsList.get(0).getDistance().getValue() / 1000;
                         float duration = legsList.get(0).getDuration().getValue() / 60;
                         String s = "Ride Distance: " + legsList.get(0).getDistance().getText()
@@ -320,11 +326,11 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                         polylineOptions = new PolylineOptions();
                         polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
                                 R.color.black));
-                        polylineOptions.width(20);
+                        polylineOptions.width(polyLineWidth);
                         polylineOptions.startCap(new ButtCap());
                         polylineOptions.jointType(JointType.ROUND);
                         polylineOptions.addAll(latLngList);
-                        mMap.addPolyline(polylineOptions);
+                        polyline = mMap.addPolyline(polylineOptions);
                         cardView.setVisibility(View.VISIBLE);
                         textView.setText(s);
                         LatLngBounds.Builder builder = new LatLngBounds.Builder();
