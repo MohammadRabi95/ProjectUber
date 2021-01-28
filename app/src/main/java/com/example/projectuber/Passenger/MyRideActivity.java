@@ -24,7 +24,7 @@ import static com.example.projectuber.Utils.Constants.completedRideKey;
 public class MyRideActivity extends AppCompatActivity {
 
     private String id = "";
-    private TextView status, d_name, car_details, pick_loc, drop_loc, distance, price;
+    private TextView status, d_name, car_details, pick_loc, drop_loc, distance, price, estimated_tim;
     private Button btn_cnl;
     private RideProgress progress;
 
@@ -42,6 +42,7 @@ public class MyRideActivity extends AppCompatActivity {
         drop_loc = findViewById(R.id.drop_loc);
         distance = findViewById(R.id.dist);
         price = findViewById(R.id.price);
+        estimated_tim = findViewById(R.id.time);
 
         btn_cnl = findViewById(R.id.btn_cnl);
 
@@ -66,6 +67,7 @@ public class MyRideActivity extends AppCompatActivity {
         pick_loc.setText(rideProgress.getPickup_location());
         drop_loc.setText(rideProgress.getDropOff_location());
         distance.setText(rideProgress.getDistance());
+        estimated_tim.setText(rideProgress.getDuration());
         price.setText(rideProgress.getPrice());
 
     }
