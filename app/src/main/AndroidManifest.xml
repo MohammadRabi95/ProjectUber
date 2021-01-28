@@ -7,6 +7,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -15,9 +20,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectUberSplash">
-        <activity android:name=".CompletedRides.CompletedRidesActivity"></activity>
+        <activity android:name=".Driver.DriverPaymentActivity"></activity>
+        <activity android:name=".Passenger.PassengerPaymentActivity" />
+        <activity android:name=".Driver.DriverCarDetailsActivity" />
+        <activity android:name=".CompletedRides.CompletedRidesActivity" />
         <activity android:name=".SelectModeActivity" />
-        <activity android:name=".Driver.ProgressRideActivity" />
         <activity android:name=".Maps.PassengerMapsActivity" />
         <activity android:name=".Passenger.MyRideActivity" />
         <activity

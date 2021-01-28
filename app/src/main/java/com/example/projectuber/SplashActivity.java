@@ -26,15 +26,13 @@ public class SplashActivity extends AppCompatActivity {
             if (AppHelper.isInternetAvailable(SplashActivity.this)) {
                 if (AppHelper.isUserAvailable()) {
                     if (CurrentUser.IsDriver(SplashActivity.this)) {
-                        if (RideSession.IsRideAccepted(SplashActivity.this)) {
+                        if (RideSession.IsRideAccepted(SplashActivity.this) ||
+                                RideSession.IsRideInProgress(SplashActivity.this)) {
                             startActivity(new Intent(SplashActivity.this, AcceptRideActivity.class));
-                            finish();
-                        } else if (RideSession.IsRideInProgress(SplashActivity.this)) {
-                                //TODO: navigate to ride progress driver activity
                         } else {
                             startActivity(new Intent(SplashActivity.this, SelectModeActivity.class));
-                            finish();
                         }
+                        finish();
                     } else {
                         if (RideSession.IsGettingRide(this)) {
                             startActivity(new Intent(SplashActivity.this, PassengerMapsActivity.class));

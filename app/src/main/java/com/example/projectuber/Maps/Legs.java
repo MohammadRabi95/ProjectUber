@@ -1,8 +1,19 @@
 package com.example.projectuber.Maps;
 
+import java.util.List;
+
 public class Legs {
     private Distance distance;
     private Duration duration;
+    private List<Steps> steps;
+
+    public List<Steps> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<Steps> steps) {
+        this.steps = steps;
+    }
 
     public Distance getDistance() {
         return distance;

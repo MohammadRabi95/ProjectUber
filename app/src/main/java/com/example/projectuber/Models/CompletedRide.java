@@ -1,6 +1,8 @@
 package com.example.projectuber.Models;
 
-public class CompletedRide {
+import java.io.Serializable;
+
+public class CompletedRide implements Serializable {
     private String id;
     private String passengerId;
     private String driverId;
@@ -21,6 +23,15 @@ public class CompletedRide {
     private String duration;
     private String price;
     private String paidVia;
+    private boolean isAmountPaid;
+
+    public boolean isAmountPaid() {
+        return isAmountPaid;
+    }
+
+    public void setAmountPaid(boolean amountPaid) {
+        isAmountPaid = amountPaid;
+    }
 
     public String getPaidVia() {
         return paidVia;

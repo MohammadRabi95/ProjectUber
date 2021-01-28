@@ -18,6 +18,8 @@ import com.example.projectuber.Utils.AppHelper;
 
 import java.util.List;
 
+import static com.example.projectuber.Utils.Constants.PASSENGER;
+
 public class AsPassengerFragment extends Fragment {
 
     public AsPassengerFragment() {
@@ -34,7 +36,7 @@ public class AsPassengerFragment extends Fragment {
             @Override
             public void onResponse(Object... params) {
                 List<CompletedRide> list = (List<CompletedRide>) params[0];
-                recyclerView.setAdapter(new CompletedRidesAdapter(list, getContext()));
+                recyclerView.setAdapter(new CompletedRidesAdapter(list, getContext(), PASSENGER));
             }
 
             @Override

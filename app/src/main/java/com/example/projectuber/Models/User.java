@@ -2,6 +2,25 @@ package com.example.projectuber.Models;
 
 public class User {
     private String id, name, phone, email;
+    private boolean isDriver;
+
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
+    }
+
+    private boolean isApproved;
+
+    public boolean isDriver() {
+        return isDriver;
+    }
+
+    public void setDriver(boolean driver) {
+        isDriver = driver;
+    }
 
     public User() {
     }
