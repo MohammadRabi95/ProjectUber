@@ -48,7 +48,6 @@ public class ReceivedOTPActivity extends AppCompatActivity {
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
-            //AppHelper.showSnakeBar(), e.getMessage());
             Log.e(TAG, "onVerificationFailed: ", e);
         }
 
@@ -59,7 +58,6 @@ public class ReceivedOTPActivity extends AppCompatActivity {
             //mResendToken = forceResendingToken;
         }
     };
-    private String mobNum = "";
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -82,12 +80,12 @@ public class ReceivedOTPActivity extends AppCompatActivity {
             onRestoreInstanceState(savedInstanceState);
         }
         Bundle extras = getIntent().getExtras();
+        String mobNum = "";
         if (extras != null) {
             mobNum = extras.getString("phone");
         } else {
             mobNum = "null";
         }
-        mAuth = FirebaseAuth.getInstance();
         textView_title_with_phone = findViewById(R.id.tv_title_input_enter_number_SinginActivty);
         textView_resendOTP = findViewById(R.id.tv_resendCode_OTPActivity);
         imageView_back_button = findViewById(R.id.iv_back_ReceivedOTPActivity);
@@ -95,6 +93,7 @@ public class ReceivedOTPActivity extends AppCompatActivity {
         editText_otp_code = findViewById(R.id.et_OTP_code_OTPActivity);
         textView_title_with_phone.setText("Enter the 6-digit code sent to you at " + mobNum);
         imageView_back_button.setOnClickListener(view -> finish());
+        mAuth = FirebaseAuth.getInstance();
         button_next.setOnClickListener(view1 -> {
              /*Intent intent=new Intent(ReceivedOTPActivity.this,GetingCredentialsActivity.class);
         startActivity(intent);

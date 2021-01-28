@@ -11,28 +11,28 @@ import android.view.MenuItem;
 
 import com.example.projectuber.Auth.SignInActivity;
 import com.example.projectuber.CompletedRides.CompletedRidesActivity;
+import com.example.projectuber.Driver.DriverCarDetailsActivity;
+import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Maps.DriverMapsActivity;
 import com.example.projectuber.Maps.PassengerMapsActivity;
+import com.example.projectuber.Passenger.PassengerPaymentActivity;
+import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.example.projectuber.Utils.RideSession;
 
 public class SelectModeActivity extends AppCompatActivity {
-
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_mode);
 
-        toolbar = findViewById(R.id.toolbar_select);
+        Toolbar toolbar = findViewById(R.id.toolbar_select);
         setSupportActionBar(toolbar);
         DatabaseCalls.getCurrentUserCall(this);
 
         findViewById(R.id.drive).setOnClickListener(view -> {
-            CurrentUser.setDrivingMode(this, true);
-            startActivity(new Intent(this, DriverMapsActivity.class));
-            finish();
+            checkIsDriverCarRegistered();
         });
 
         findViewById(R.id.ride).setOnClickListener(view -> {
@@ -76,5 +76,24 @@ public class SelectModeActivity extends AppCompatActivity {
 
     private void rateApp() {
 
+    }
+
+    private void checkIsDriverCarRegistered() {
+        DatabaseCalls.isUserDriver(this, new ResponseInterface() {
+            @Override
+            public void onResponse(Object... params) {
+                if ((boolean) params[0]) {
+                    startActivity(new Intent(SelectModeActivity.this, DriverMapsActivity.class));
+                } else {
+                   startActivity(new Intent(SelectModeActivity.this, DriverCarDetailsActivity.class));
+                }
+                finish();
+            }
+
+            @Override
+            public void onError(String error) {
+                AppHelper.showSnackBar(findViewById(android.R.id.content), error);
+            }
+        });
     }
 }

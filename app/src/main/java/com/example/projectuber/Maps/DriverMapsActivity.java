@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Interfaces.RidesCallback;
 import com.example.projectuber.Models.Ride;
+import com.example.projectuber.Models.RideDistance;
 import com.example.projectuber.Models.RideProgress;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
@@ -50,9 +52,13 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -74,13 +80,12 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     private RecyclerView recyclerView;
     private TextView textView;
     private CardView cardView;
+    private SpotsDialog spotsDialog;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean mLocationPermissionGranted = false;
     private API api;
     private List<LatLng> latLngList;
-    private PolylineOptions polylineOptions;
-    private List<Legs> legsList;
-    private Polyline polyline;
+    private Location mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +96,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         recyclerView = findViewById(R.id.map_recyclerView);
         textView = findViewById(R.id.tv_map);
         cardView = findViewById(R.id.cv_map);
+        spotsDialog = AppHelper.showLoadingDialog(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
@@ -99,14 +105,12 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                 .baseUrl("https://maps.googleapis.com/").build();
         api = retrofit.create(API.class);
         latLngList = new ArrayList<>();
-        legsList = new ArrayList<>();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getRides();
         if (checkMapServices()) {
             if (mLocationPermissionGranted) {
                 getCurrentLocation();
@@ -119,7 +123,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setTrafficEnabled(true);
+        mMap.setTrafficEnabled(false);
     }
 
     private boolean checkMapServices() {
@@ -224,10 +228,12 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         final Task<Location> task = fusedLocationProviderClient.getLastLocation();
         task.addOnSuccessListener(location -> {
             if (location != null) {
+                this.mLocation = location;
                 setMapData(location);
             }
         }).addOnFailureListener(e -> {
-
+            Log.e(TAG, "getCurrentLocation: ", e);
+            AppHelper.showSnackBar(findViewById(android.R.id.content), e.getMessage());
         });
     }
 
@@ -236,6 +242,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
             LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(loc).title("Current Location"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+            getRides();
         }
     }
 
@@ -272,15 +279,23 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
             retrofitCall(pickupLat + "," + pickupLng, dropOffLat + "," + dropOffLng,
                     pickUpLatLng, dropOffLatLng);
 
-            mMap.addMarker(new MarkerOptions().position(pickUpLatLng).title(pickupLocation));
-            mMap.addMarker(new MarkerOptions().position(dropOffLatLng).title(dropOffLocation));
+
 
         }
     }
 
     private void setAdapter(List<Ride> list) {
+        List<RideDistance> rideDistanceList = new ArrayList<>();
+        for (Ride ride: list) {
+            RideDistance rideDistance = new RideDistance();
+            rideDistance.setRide(ride);
+            rideDistance.setDistanceInMeter(calculateDistanceFromMe(Double.parseDouble(ride.getPickup_latitude()),
+                    Double.parseDouble(ride.getPickup_longitude())));
+            rideDistanceList.add(rideDistance);
+        }
+        Collections.sort(rideDistanceList, (rideDistance, t1) -> (int) (rideDistance.getDistanceInMeter() - t1.getDistanceInMeter()));
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(new RidesAdapter(this, list, this));
+        recyclerView.setAdapter(new RidesAdapter(this, rideDistanceList, this));
     }
 
     private void getRides() {
@@ -298,54 +313,81 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     private void retrofitCall(String origin, String destination, LatLng orig, LatLng dest) {
+        spotsDialog.show();
         api.getDirection("driving", "less_driving",
                 origin, destination, getString(R.string.google_maps_key))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Result>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        // spotsDialog.dismiss();
                     }
 
                     @Override
-                    public void onSuccess(Result value) {
-                        List<Route> routeList = value.getRoutes();
-                        for (Route route : routeList) {
-                            String polyline = route.getOverViewPolyline().getPoints();
-                            latLngList.addAll(decodePoly(polyline));
-                            legsList.addAll(route.getLegs());
+                    public void onSuccess(@NonNull Result value) {
+                        mMap.clear();
+                        ArrayList<LatLng> routeList = new ArrayList<>();
+                        List<Legs> legsList = new ArrayList<>(value.getRoutes().get(0).getLegs());
+                        if (value.getRoutes().size() > 0) {
+                            Route route = value.getRoutes().get(0);
+                            if (route.getLegs().size() > 0) {
+                                List<Steps> steps = route.getLegs().get(0).getSteps();
+                                Steps step;
+                                Locations locations;
+                                String polyline;
+                                for (int i = 0; i < steps.size(); i++) {
+                                    step = steps.get(i);
+                                    locations = step.getStart_location();
+                                    routeList.add(new LatLng(locations.getLat(), locations.getLng()));
+                                    polyline = step.getPolyline().getPoints();
+                                    latLngList = decodePoly(polyline);
+                                    routeList.addAll(latLngList);
+                                    locations = step.getEnd_location();
+                                    routeList.add(new LatLng(locations.getLat(), locations.getLng()));
+                                }
+                            }
                         }
-                        if (polyline != null) {
-                            polyline.remove();
-                        }
-                        float distance = legsList.get(0).getDistance().getValue() / 1000;
-                        float duration = legsList.get(0).getDuration().getValue() / 60;
-                        String s = "Ride Distance: " + legsList.get(0).getDistance().getText()
-                                + "\nRide Duration: " + legsList.get(0).getDuration().getText()
-                                + "\nEstimated Fair: " + AppHelper.calculateFairs(distance, duration)
-                                + " $";
-                        polylineOptions = new PolylineOptions();
-                        polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
-                                R.color.black));
-                        polylineOptions.width(polyLineWidth);
-                        polylineOptions.startCap(new ButtCap());
-                        polylineOptions.jointType(JointType.ROUND);
-                        polylineOptions.addAll(latLngList);
-                        polyline = mMap.addPolyline(polylineOptions);
-                        cardView.setVisibility(View.VISIBLE);
-                        textView.setText(s);
-                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                        builder.include(orig);
-                        builder.include(dest);
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 85));
+                        if (routeList.size() > 0) {
+                            PolylineOptions rectLine = new PolylineOptions().width(polyLineWidth).color(
+                                    Color.BLACK);
 
+                            for (int i = 0; i < routeList.size(); i++) {
+                                rectLine.add(routeList.get(i));
+                            }
+                            float distance = legsList.get(0).getDistance().getValue() / 1000;
+                            float duration = legsList.get(0).getDuration().getValue() / 60;
+                            String s = "Ride Distance: " + legsList.get(0).getDistance().getText()
+                                    + "\nRide Duration: " + legsList.get(0).getDuration().getText()
+                                    + "\nEstimated Fair: " + AppHelper.calculateFairs(distance, duration)
+                                    + " $";
+
+                            cardView.setVisibility(View.VISIBLE);
+                            textView.setText(s);
+                            mMap.addPolyline(rectLine);
+                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                            builder.include(orig);
+                            builder.include(dest);
+                            mMap.addMarker(new MarkerOptions().position(orig));
+                            mMap.addMarker(new MarkerOptions().position(dest));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 250));
+                            spotsDialog.dismiss();
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        spotsDialog.dismiss();
                         Log.e(TAG, "onError: ", e);
+                        AppHelper.showSnackBar(findViewById(android.R.id.content), e.getMessage());
                     }
                 });
     }
 
 
+    private float calculateDistanceFromMe(double lat, double lng) {
+        Location location = new Location("");
+        location.setLatitude(lat);
+        location.setLongitude(lng);
+        return mLocation.distanceTo(location);
+    }
 }

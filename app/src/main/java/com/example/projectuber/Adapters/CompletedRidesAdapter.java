@@ -11,17 +11,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectuber.Models.CompletedRide;
 import com.example.projectuber.R;
+import com.example.projectuber.Utils.Constants;
 
 import java.util.List;
+
+import static com.example.projectuber.Utils.Constants.DRIVER;
+import static com.example.projectuber.Utils.Constants.PASSENGER;
 
 public class CompletedRidesAdapter extends RecyclerView.Adapter<CompletedRidesAdapter.CompletedRidesHolder> {
 
     private List<CompletedRide> list;
     private Context context;
+    private int type;
 
-    public CompletedRidesAdapter(List<CompletedRide> list, Context context) {
+    public CompletedRidesAdapter(List<CompletedRide> list, Context context, int type) {
         this.list = list;
         this.context = context;
+        this.type = type;
     }
 
     @NonNull
@@ -36,9 +42,23 @@ public class CompletedRidesAdapter extends RecyclerView.Adapter<CompletedRidesAd
         CompletedRide completedRide = list.get(position);
 
         if (completedRide != null) {
-            holder.textView.setText("Driver Name: " + completedRide.getDriverName() +
-                    "\nPassenger Name: " + completedRide.getPassengerName());
+            if (type == DRIVER) {
+                holder._name.setText("Passenger Name:");
+                holder._id.setText("Passenger ID:");
+                holder.name.setText(completedRide.getPassengerName());
+                holder.id.setText(completedRide.getPassengerId());
+            } else if (type == PASSENGER) {
+                holder._name.setText("Driver Name:");
+                holder._id.setText("Driver ID:");
+                holder.name.setText(completedRide.getDriverName());
+                holder.id.setText(completedRide.getDriverId());
+            }
+            holder.p_loc.setText(completedRide.getPickup_location());
+            holder.d_loc.setText(completedRide.getDropOff_location());
+            holder.amount.setText(completedRide.getPrice());
+            holder.paid_via.setText(completedRide.getPaidVia());
         }
+
     }
 
     @Override
@@ -47,11 +67,20 @@ public class CompletedRidesAdapter extends RecyclerView.Adapter<CompletedRidesAd
     }
 
     class CompletedRidesHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView name, _name, _id, id, amount, p_loc, d_loc, paid_via;
 
         public CompletedRidesHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.a);
+            name = itemView.findViewById(R.id.p_name);
+            _name = itemView.findViewById(R.id.Name);
+            _id = itemView.findViewById(R.id.id);
+            id = itemView.findViewById(R.id.p_id);
+            amount = itemView.findViewById(R.id.price);
+            p_loc = itemView.findViewById(R.id.p_loc);
+            d_loc = itemView.findViewById(R.id.d_loc);
+            paid_via = itemView.findViewById(R.id.p_via);
+
+
         }
     }
 }

@@ -15,8 +15,11 @@ import com.example.projectuber.Interfaces.ResponseInterface;
 import com.example.projectuber.Models.CompletedRide;
 import com.example.projectuber.R;
 import com.example.projectuber.Utils.AppHelper;
+import com.example.projectuber.Utils.Constants;
 
 import java.util.List;
+
+import static com.example.projectuber.Utils.Constants.DRIVER;
 
 public class AsDriverFragment extends Fragment {
 
@@ -37,7 +40,7 @@ public class AsDriverFragment extends Fragment {
             @Override
             public void onResponse(Object... params) {
                 List<CompletedRide> list = (List<CompletedRide>) params[0];
-                recyclerView.setAdapter(new CompletedRidesAdapter(list, getContext()));
+                recyclerView.setAdapter(new CompletedRidesAdapter(list, getContext(), DRIVER));
             }
             @Override
             public void onError(String error) {

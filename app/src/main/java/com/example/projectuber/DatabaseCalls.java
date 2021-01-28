@@ -1,11 +1,13 @@
 package com.example.projectuber;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.projectuber.Interfaces.ResponseInterface;
+import com.example.projectuber.Models.Car;
 import com.example.projectuber.Models.CompletedRide;
 import com.example.projectuber.Models.Ride;
 import com.example.projectuber.Models.RideProgress;
@@ -14,6 +16,7 @@ import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.CurrentUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +24,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +42,15 @@ public class DatabaseCalls {
     public static final DatabaseReference rideRef = FirebaseDatabase.getInstance().getReference(Rides);
     private static final String ProgressRides = "ProgressRides";
     private static final String CompletedRides = "CompletedRides";
+    private static final String Cars = "Cars";
+    private static final String CarsImages = "CarImages";
+    private static final String LicenseImages = "LicenseImages";
     private static final DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(Users);
     private static final DatabaseReference progressRidesRef = FirebaseDatabase.getInstance().getReference(ProgressRides);
+    private static final DatabaseReference carsRef = FirebaseDatabase.getInstance().getReference(Cars);
     private static final DatabaseReference completedRidesRef = FirebaseDatabase.getInstance().getReference(CompletedRides);
-
+    private static final StorageReference carImagesRef = FirebaseStorage.getInstance().getReference(CarsImages);
+    private static final StorageReference licenseImagesRef = FirebaseStorage.getInstance().getReference(LicenseImages);
 
     public static void setRidesCall(Context context, Ride ride, ResponseInterface responseInterface) {
         SpotsDialog dialog = AppHelper.showLoadingDialog(context);
@@ -177,6 +188,7 @@ public class DatabaseCalls {
                     completedRide.setDistance(rideProgress.getDistance());
                     completedRide.setDuration(rideProgress.getDuration());
                     completedRide.setPrice(rideProgress.getPrice());
+                    completedRide.setAmountPaid(false);
                     completedRide.setDropOffTimeStamp(AppHelper.getTimeStamp());
 
                     completedRidesRef.child(rideProgress.getId()).setValue(completedRide)
@@ -227,15 +239,13 @@ public class DatabaseCalls {
     public static void isRideStartedCall(Context context, String id, ResponseInterface responseInterface) {
         SpotsDialog dialog = AppHelper.showLoadingDialog(context);
         dialog.show();
-        Query query = progressRidesRef.orderByChild("id").equalTo(id);
-        query.addValueEventListener(new ValueEventListener() {
+        progressRidesRef.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     RideProgress progress = snapshot.getValue(RideProgress.class);
                     if (progress != null) {
-                        if (progress.isRideStarted())
-                            responseInterface.onResponse(progress);
+                        responseInterface.onResponse(progress);
                         dialog.dismiss();
                     }
                 } else {
@@ -255,11 +265,15 @@ public class DatabaseCalls {
     public static void isRideCompletedCall(Context context, String id, ResponseInterface responseInterface) {
         SpotsDialog dialog = AppHelper.showLoadingDialog(context);
         dialog.show();
-        Query query = completedRidesRef.orderByChild("id").equalTo(id);
-        query.addValueEventListener(new ValueEventListener() {
+        completedRidesRef.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                responseInterface.onResponse(snapshot.exists());
+                if (snapshot.exists()) {
+                    CompletedRide completedRide = snapshot.getValue(CompletedRide.class);
+                    responseInterface.onResponse(true, completedRide);
+                } else {
+                    responseInterface.onResponse(false);
+                }
                 dialog.dismiss();
             }
 
@@ -387,4 +401,191 @@ public class DatabaseCalls {
             }
         });
     }
+
+    public static void isUserDriver(Context context, ResponseInterface responseInterface) {
+        SpotsDialog spotsDialog = AppHelper.showLoadingDialog(context);
+        spotsDialog.show();
+        userRef.child(CurrentUser.getUserId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        responseInterface.onResponse(user.isDriver());
+                        spotsDialog.dismiss();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "onCancelled: isUserDriver ", error.toException());
+                responseInterface.onError(error.getMessage());
+                spotsDialog.dismiss();
+            }
+        });
+    }
+
+    public static void isPaying(Context context, String id, ResponseInterface responseInterface) {
+
+        completedRidesRef.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    CompletedRide completedRide = snapshot.getValue(CompletedRide.class);
+                    if (completedRide != null) {
+                        if (!"".equals(completedRide.getPaidVia())) {
+                            responseInterface.onResponse(completedRide.getPaidVia());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "onCancelled: isUserDriver ", error.toException());
+                responseInterface.onError(error.getMessage());
+            }
+        });
+    }
+
+    public static void setPaymentMethod(Context context, String id, String method, ResponseInterface responseInterface) {
+
+        completedRidesRef.child(id).child("paidVia").setValue(method)
+                .addOnCompleteListener(task -> responseInterface.onResponse(task.isSuccessful())).addOnFailureListener(e -> {
+            Log.e(TAG, "onFailure: setPaymentMethod ", e);
+            responseInterface.onError(e.getMessage());
+        });
+    }
+
+    public static void setPaymentPaid(Context context, String id, boolean isPaid, ResponseInterface responseInterface) {
+
+        completedRidesRef.child(id).child("amountPaid").setValue(isPaid)
+                .addOnCompleteListener(task -> responseInterface.onResponse(task.isSuccessful())).addOnFailureListener(e -> {
+            Log.e(TAG, "onFailure: setPaymentMethod ", e);
+            responseInterface.onError(e.getMessage());
+        });
+    }
+
+    public static void registerDriverCall(Context context, Car car, Uri licenseIMG,
+                                          Uri carIMG, ResponseInterface responseInterface) {
+        SpotsDialog dialog = AppHelper.showLoadingDialog(context);
+        dialog.show();
+        uploadLicenseImageCall(context, licenseIMG, new ResponseInterface() {
+            @Override
+            public void onResponse(Object... params) {
+                if ((boolean) params[0]) {
+                    String url = (String) params[1];
+                    car.setLicenseImageURl(url);
+                    uploadCarsImageCall(context, carIMG, new ResponseInterface() {
+                        @Override
+                        public void onResponse(Object... params) {
+                            if ((boolean) params[0]) {
+                                String url = (String) params[1];
+                                car.setCarImageURL(url);
+                                carsRef.child(CurrentUser.getUserId())
+                                        .setValue(car).addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        userRef.child(CurrentUser.getUserId())
+                                                .child("driver").setValue(true)
+                                                .addOnCompleteListener(task1 -> {
+                                                    dialog.dismiss();
+                                                    responseInterface.onResponse(task1.isSuccessful());
+                                                });
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            dialog.dismiss();
+                            responseInterface.onError(error);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                dialog.dismiss();
+                responseInterface.onError(error);
+            }
+        });
+    }
+
+    private static void uploadCarsImageCall(Context context, Uri carIMG,
+                                            ResponseInterface responseInterface) {
+        StorageReference ref = carImagesRef.child(System.currentTimeMillis() + "" + "." +
+                AppHelper.getFileExtension(context, carIMG));
+        ref.putFile(carIMG).addOnSuccessListener(taskSnapshot ->
+                ref.getDownloadUrl().addOnSuccessListener(uri ->
+                        responseInterface.onResponse(true, uri.toString()))
+                        .addOnFailureListener(e -> {
+                            responseInterface.onError(e.getMessage());
+                            Log.e(TAG, "onFailure: uploadCarsImageCall 1 ", e);
+                        })).addOnFailureListener(e -> {
+            responseInterface.onError(e.getMessage());
+            Log.e(TAG, "onFailure: uploadCarsImageCall 2 ", e);
+        });
+    }
+
+    private static void uploadLicenseImageCall(Context context, Uri licenseIMG,
+                                               ResponseInterface responseInterface) {
+        StorageReference ref = licenseImagesRef.child(System.currentTimeMillis() + "" + "." +
+                AppHelper.getFileExtension(context, licenseIMG));
+        ref.putFile(licenseIMG).addOnSuccessListener(taskSnapshot ->
+                ref.getDownloadUrl().addOnSuccessListener(uri ->
+                        responseInterface.onResponse(true, uri.toString()))
+                        .addOnFailureListener(e -> {
+                            responseInterface.onError(e.getMessage());
+                            Log.e(TAG, "onFailure: uploadLicenseImageCall 1 ", e);
+                        })).addOnFailureListener(e -> {
+            responseInterface.onError(e.getMessage());
+            Log.e(TAG, "onFailure: uploadLicenseImageCall 2 ", e);
+        });
+    }
+
+    public static void getCarInfo(Context context, String id, ResponseInterface responseInterface) {
+        carsRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Car car = snapshot.getValue(Car.class);
+                    if (car != null) {
+                        responseInterface.onResponse(true, car);
+                    } else {
+                        responseInterface.onResponse(false);
+                    }
+                } else {
+                    responseInterface.onResponse(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "onCancelled: ", error.toException());
+                responseInterface.onError(error.getMessage());
+            }
+        });
+    }
+
+    public static void isAmountPaid(Context context, String id, ResponseInterface responseInterface) {
+        completedRidesRef.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    CompletedRide completedRide = snapshot.getValue(CompletedRide.class);
+                    responseInterface.onResponse(completedRide.isAmountPaid());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "onCancelled: ", error.toException());
+                responseInterface.onError(error.getMessage());
+            }
+        });
+    }
+
 }

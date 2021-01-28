@@ -1,10 +1,13 @@
 package com.example.projectuber.Utils;
 
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -14,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,5 +91,11 @@ public class AppHelper {
 
     public static SpotsDialog showLoadingDialog(Context context) {
         return new SpotsDialog(context, R.style.Custom);
+    }
+
+    public static String getFileExtension(@NotNull Context context, Uri uri) {
+        ContentResolver cR = context.getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 }

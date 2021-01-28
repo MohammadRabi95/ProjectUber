@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.projectuber.DatabaseCalls;
 import com.example.projectuber.Interfaces.ResponseInterface;
+import com.example.projectuber.Models.RideDistance;
 import com.example.projectuber.Models.RideProgress;
 import com.example.projectuber.R;
 import com.example.projectuber.SelectModeActivity;
@@ -21,9 +22,6 @@ import com.github.clans.fab.FloatingActionButton;
 public class AcceptRideActivity extends AppCompatActivity implements View.OnClickListener {
 
     private RideProgress ride;
-    private TextView name_tv, pickup_tv, drop_tv,
-            distance_tv, time_tv, price_tv;
-    private FloatingActionButton call_btn, direc_btn;
     private Button start_btn;
 
     @Override
@@ -47,14 +45,14 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setData() {
-        name_tv = findViewById(R.id.pass_nme);
-        pickup_tv = findViewById(R.id.pick_loc);
-        drop_tv = findViewById(R.id.drop_loc);
-        distance_tv = findViewById(R.id.dist);
-        time_tv = findViewById(R.id.time);
-        price_tv = findViewById(R.id.price);
-        call_btn = findViewById(R.id.fab_call);
-        direc_btn = findViewById(R.id.fab_directions);
+        TextView name_tv = findViewById(R.id.pass_nme);
+        TextView pickup_tv = findViewById(R.id.pick_loc);
+        TextView drop_tv = findViewById(R.id.drop_loc);
+        TextView distance_tv = findViewById(R.id.dist);
+        TextView time_tv = findViewById(R.id.time);
+        TextView price_tv = findViewById(R.id.price);
+        FloatingActionButton call_btn = findViewById(R.id.fab_call);
+        FloatingActionButton direc_btn = findViewById(R.id.fab_directions);
         start_btn = findViewById(R.id.btn_rideStart);
 
         name_tv.setText(ride.getPassengerName());
@@ -67,15 +65,16 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
         call_btn.setOnClickListener(this);
         direc_btn.setOnClickListener(this);
         start_btn.setOnClickListener(this);
+
+        if (RideSession.IsRideInProgress(this)) {
+            isRideStarted();
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_rideStart:
-                System.out.println("IsRideInProgress ================= " + RideSession.IsRideInProgress(this));
-                System.out.println("IsRideAccepted ================= " + RideSession.IsRideAccepted(this));
-
                 if (RideSession.IsRideInProgress(this)) {
                         onRideFinished();
                     } else if (RideSession.IsRideAccepted(this)){
@@ -101,7 +100,8 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
                             getString(R.string.somthing_wrong));
                 }
                 RideSession.resetRideSession(AcceptRideActivity.this);
-                startActivity(new Intent(AcceptRideActivity.this, SelectModeActivity.class));
+                startActivity(new Intent(AcceptRideActivity.this, DriverPaymentActivity.class)
+                .putExtra("model", ride));
                 finish();
             }
             @Override
@@ -117,6 +117,23 @@ public class AcceptRideActivity extends AppCompatActivity implements View.OnClic
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                 Uri.parse("http://maps.google.com/maps?saddr=" + origin + "&daddr=" + destination));
         startActivity(intent);
+    }
+
+    private void isRideStarted() {
+        DatabaseCalls.isRideStartedCall(this, ride.getId(), new ResponseInterface() {
+            @Override
+            public void onResponse(Object... params) {
+                RideProgress rideProgress = (RideProgress) params[0];
+                if (rideProgress.isRideStarted()) {
+                    start_btn.setText("End Ride");
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                AppHelper.showSnackBar(findViewById(android.R.id.content), error);
+            }
+        });
     }
 
     private void onRideStarted() {
