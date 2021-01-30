@@ -18,6 +18,7 @@ import com.example.projectuber.SelectModeActivity;
 import com.example.projectuber.Utils.AppHelper;
 import com.example.projectuber.Utils.RideSession;
 import com.github.clans.fab.FloatingActionButton;
+//import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class AcceptRideActivity extends AppCompatActivity implements View.OnClickListener {
 

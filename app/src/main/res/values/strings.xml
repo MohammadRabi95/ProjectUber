@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ProjectUber</string>
+    <string name="app_name">VCROW</string>
     <string name="insert_num">Please insert your number to move forward</string>
     <string name="title_activity_maps">Map</string>
     <string name="dummy_loc">58 Slaughter house Quaid-e-Azam Industrial State Lahore</string>
@@ -7,6 +7,5 @@
     <string name="dropOf"><b>DropOff: </b></string>
     <string name="somthing_wrong">Oops Something Went wrong</string>
     <string name="cannot_be_empty">Field Cannot be Empty</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
