@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -84,14 +85,11 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     private boolean mLocationPermissionGranted = false;
     private API api;
     private List<LatLng> latLngList;
-    private PolylineOptions polylineOptions;
-    private List<Legs> legsList;
     private LatLng pick_ltln, drop_ltln;
     private Ride ride;
     private FloatingActionButton current_loc;
     private AutocompleteSupportFragment pick_frag, drop_frag;
     private String p_loc = "", d_loc = "";
-    private Polyline polyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +101,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                 .findFragmentById(R.id.map);
         initializeMyPlaces();
         fabClick();
+
         spotsDialog = AppHelper.showLoadingDialog(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         assert mapFragment != null;
@@ -112,7 +111,6 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                 .baseUrl("https://maps.googleapis.com/").build();
         api = retrofit.create(API.class);
         latLngList = new ArrayList<>();
-        legsList = new ArrayList<>();
         if (RideSession.IsGettingRide(this)) {
             ride = RideSession.getUserRideModel(this);
             next_btn.setVisibility(View.GONE);
@@ -151,7 +149,7 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setTrafficEnabled(true);
+        mMap.setTrafficEnabled(false);
     }
 
     private boolean checkMapServices() {
@@ -262,9 +260,6 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
 
     private void setMapData(Location location) {
         mMap.clear();
-        if (polyline != null) {
-            polyline.remove();
-        }
         if (mLocationPermissionGranted) {
             LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(loc).title("Current Location"));
@@ -285,43 +280,60 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
                     }
 
                     @Override
-                    public void onSuccess(Result value) {
-                        List<Route> routeList = value.getRoutes();
-                        for (Route route : routeList) {
-                            String polyline = route.getOverViewPolyline().getPoints();
-                            latLngList.addAll(decodePoly(polyline));
-                            legsList.addAll(route.getLegs());
+                    public void onSuccess(@NonNull Result value) {
+                        mMap.clear();
+                        ArrayList<LatLng> routeList = new ArrayList<>();
+                        List<Legs> legsList = new ArrayList<>(value.getRoutes().get(0).getLegs());
+                        if (value.getRoutes().size() > 0) {
+                            Route route = value.getRoutes().get(0);
+                            if (route.getLegs().size() > 0) {
+                                List<Steps> steps = route.getLegs().get(0).getSteps();
+                                Steps step;
+                                Locations locations;
+                                String polyline;
+                                for (int i = 0; i < steps.size(); i++) {
+                                    step = steps.get(i);
+                                    locations = step.getStart_location();
+                                    routeList.add(new LatLng(locations.getLat(), locations.getLng()));
+                                    polyline = step.getPolyline().getPoints();
+                                    latLngList = decodePoly(polyline);
+                                    routeList.addAll(latLngList);
+                                    locations = step.getEnd_location();
+                                    routeList.add(new LatLng(locations.getLat(), locations.getLng()));
+                                }
+                            }
                         }
+                        if (routeList.size() > 0) {
+                            PolylineOptions rectLine = new PolylineOptions().width(polyLineWidth).color(
+                                    Color.BLACK);
 
-                        if (polyline != null) {
-                            polyline.remove();
+                            for (int i = 0; i < routeList.size(); i++) {
+                                rectLine.add(routeList.get(i));
+                            }
+                            float distance = legsList.get(0).getDistance().getValue() / 1000;
+                            float duration = legsList.get(0).getDuration().getValue() / 60;
+                            String s = legsList.get(0).getDistance().getText();
+                            String s1 = legsList.get(0).getDuration().getText();
+                            String s2 = AppHelper.calculateFairs(distance, duration) + " $";
+                            mMap.addPolyline(rectLine);
+                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                            builder.include(orig);
+                            builder.include(dest);
+                            mMap.addMarker(new MarkerOptions().position(orig));
+                            mMap.addMarker(new MarkerOptions().position(dest));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 85));
+                            showTripDetailsBottomSheet(s, s1, s2, pickup_location, dropOff_location,
+                                    orig.latitude, orig.longitude, dest.latitude, dest.longitude);
+
                         }
-                        float distance = legsList.get(0).getDistance().getValue() / 1000;
-                        float duration = legsList.get(0).getDuration().getValue() / 60;
-                        String s = legsList.get(0).getDistance().getText();
-                        String s1 = legsList.get(0).getDuration().getText();
-                        String s2 = AppHelper.calculateFairs(distance, duration) + " $";
-                        polylineOptions = new PolylineOptions();
-                        polylineOptions.color(ContextCompat.getColor(getApplicationContext(),
-                                R.color.black));
-                        polylineOptions.width(polyLineWidth);
-                        polylineOptions.startCap(new ButtCap());
-                        polylineOptions.jointType(JointType.ROUND);
-                        polylineOptions.addAll(latLngList);
-                        polyline = mMap.addPolyline(polylineOptions);
-                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                        builder.include(orig);
-                        builder.include(dest);
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 85));
-                        showTripDetailsBottomSheet(s, s1, s2, pickup_location, dropOff_location,
-                                orig.latitude, orig.longitude, dest.latitude, dest.longitude);
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "onError: ", e);
                         spotsDialog.dismiss();
+                        Log.e(TAG, "onError: ", e);
+                        AppHelper.showSnackBar(findViewById(android.R.id.content), e.getMessage());
+
                     }
                 });
     }
@@ -427,8 +439,6 @@ public class PassengerMapsActivity extends FragmentActivity implements OnMapRead
             bottomSheetDialog.show();
         });
         bottomSheetDialog.setContentView(bottomSheetView);
-        //bottomSheetDialog.setCancelable(false);
-        //bottomSheetDialog.setCanceledOnTouchOutside(false);
         spotsDialog.dismiss();
         bottomSheetDialog.show();
     }

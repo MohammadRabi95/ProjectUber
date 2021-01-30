@@ -1,7 +1,9 @@
 package com.example.projectuber.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectuber.Interfaces.RidesCallback;
 import com.example.projectuber.Models.Ride;
+import com.example.projectuber.Models.RideDistance;
 import com.example.projectuber.R;
 
 import java.util.List;
@@ -23,10 +26,10 @@ import java.util.List;
 public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesHolder> {
 
     private Context context;
-    private List<Ride> list;
+    private List<RideDistance> list;
     private RidesCallback ridesCallback;
 
-    public RidesAdapter(Context context, List<Ride> list, RidesCallback ridesCallback) {
+    public RidesAdapter(Context context, List<RideDistance> list, RidesCallback ridesCallback) {
         this.context = context;
         this.list = list;
         this.ridesCallback = ridesCallback;
@@ -41,35 +44,33 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesHolder>
 
     @Override
     public void onBindViewHolder(@NonNull RidesHolder holder, int position) {
-        Ride ride = list.get(position);
+        RideDistance ride = list.get(position);
         if (ride != null) {
-            holder.name.setText(ride.getName());
+            holder.name.setText(ride.getRide().getName());
 
-            holder.pickup.setText(toSpannableString(context.getString(R.string.PickUp) + ride.getPickup_location()));
-            holder.dropOff.setText(toSpannableString(context.getString(R.string.dropOf) + ride.getDropOff_location()));
-
-            // holder.pickup.setText(toSpannableString("Pickup: " + rides.getPickup_location()));
-           // holder.dropOff.setText(toSpannableString("DropOff: " + rides.getDropOff_location()));
+            holder.pickup.setText(toSpannableString(context.getString(R.string.PickUp) + ride.getRide().getPickup_location()));
+            holder.dropOff.setText(toSpannableString(context.getString(R.string.dropOf) + ride.getRide().getDropOff_location()));
 
             holder.call.setOnClickListener(view -> {
-                callSelectedUser(ride.getPhone());
+                callSelectedUser(ride.getRide().getPhone());
             });
 
             holder.accept.setOnClickListener(view -> {
-                ridesCallback.onRideAccepted(ride);
+                ridesCallback.onRideAccepted(ride.getRide());
             });
 
             holder.itemView.setOnClickListener(view -> {
-                ridesCallback.onRideSelected(ride.getPickup_latitude(),
-                        ride.getPickup_longitude(), ride.getDropOff_latitude(),
-                        ride.getDropOff_longitude(), ride.getPickup_location(),
-                        ride.getDropOff_location());
+                ridesCallback.onRideSelected(ride.getRide().getPickup_latitude(),
+                        ride.getRide().getPickup_longitude(), ride.getRide().getDropOff_latitude(),
+                        ride.getRide().getDropOff_longitude(), ride.getRide().getPickup_location(),
+                        ride.getRide().getDropOff_location());
             });
         }
     }
 
     private void callSelectedUser(String phone) {
-
+        context.startActivity(new Intent(Intent.ACTION_DIAL,
+                Uri.parse("tel:" + phone)));
     }
 
     @Override
@@ -80,7 +81,7 @@ public class RidesAdapter extends RecyclerView.Adapter<RidesAdapter.RidesHolder>
     private String toSpannableString(String text) {
         int i = text.indexOf(":") + 1;
         SpannableString spannableString = new SpannableString(text);
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD),0, i, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(new StyleSpan(Typeface.BOLD), 0, i, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableString.toString();
     }
 

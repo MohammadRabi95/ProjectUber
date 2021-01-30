@@ -72,6 +72,8 @@ public class GetingCredentialsActivity extends AppCompatActivity {
             user.setPhone(CurrentUser.getUsersPhoneNum());
             user.setName(editText_Fname.getText().toString()
                     + " " + editText_Lname.getText().toString());
+            user.setDriver(false);
+            user.setApproved(false);
 
             DatabaseCalls.setUserCall(this, user, new ResponseInterface() {
                 @Override
