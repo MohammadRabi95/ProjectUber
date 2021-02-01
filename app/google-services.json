@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "781305723140",
-    "project_id": "uber-8b162",
-    "storage_bucket": "uber-8b162.appspot.com"
+    "project_number": "873228899500",
+    "project_id": "vcrow-db708",
+    "storage_bucket": "vcrow-db708.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:781305723140:android:c43e2711a39ff0276bf851",
+        "mobilesdk_app_id": "1:873228899500:android:9d5372865e60cd5be43b09",
         "android_client_info": {
-          "package_name": "com.example.projectuber"
+          "package_name": "com.vcrow.rides"
         }
       },
       "oauth_client": [
         {
-          "client_id": "781305723140-e9ol4nk739n9ld0c2pkbgb8n71s8rp3b.apps.googleusercontent.com",
+          "client_id": "873228899500-2cqjhc939lgk5gg4ajo2nfsqnrukrrfb.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyByUtgL-BDybJpv1dZgJK2AxucqpjW4_Ps"
+          "current_key": "AIzaSyCHZtpsnup2BJtoQa3IU4UXol2w2H_uEnY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "781305723140-e9ol4nk739n9ld0c2pkbgb8n71s8rp3b.apps.googleusercontent.com",
+              "client_id": "873228899500-2cqjhc939lgk5gg4ajo2nfsqnrukrrfb.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

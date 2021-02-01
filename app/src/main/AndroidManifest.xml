@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.projectuber">
+    package="com.vcrow.rides">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -20,32 +20,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectUberSplash">
-        <activity android:name=".Driver.DriverPaymentActivity"></activity>
-        <activity android:name=".Passenger.PassengerPaymentActivity" />
-        <activity android:name=".Driver.DriverCarDetailsActivity" />
-        <activity android:name=".CompletedRides.CompletedRidesActivity" />
-        <activity android:name=".SelectModeActivity" />
-        <activity android:name=".Maps.PassengerMapsActivity" />
-        <activity android:name=".Passenger.MyRideActivity" />
+        <activity android:name="com.vcrow.rides.Driver.DriverPaymentActivity"/>
+        <activity android:name="com.vcrow.rides.Passenger.PassengerPaymentActivity" />
+        <activity android:name="com.vcrow.rides.Driver.DriverCarDetailsActivity" />
+        <activity android:name="com.vcrow.rides.CompletedRides.CompletedRidesActivity" />
+        <activity android:name="com.vcrow.rides.SelectModeActivity" />
+        <activity android:name="com.vcrow.rides.Maps.PassengerMapsActivity" />
+        <activity android:name="com.vcrow.rides.Passenger.MyRideActivity" />
         <activity
-            android:name=".Auth.GetingCredentialsActivity"
+            android:name="com.vcrow.rides.Auth.GetingCredentialsActivity"
             android:windowSoftInputMode="stateUnchanged" />
-        <activity android:name=".Driver.AcceptRideActivity" />
+        <activity android:name="com.vcrow.rides.Driver.AcceptRideActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Maps.DriverMapsActivity"
+            android:name="com.vcrow.rides.Maps.DriverMapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".Auth.SignInActivity"
+            android:name="com.vcrow.rides.Auth.SignInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Auth.ReceivedOTPActivity"
+            android:name="com.vcrow.rides.Auth.ReceivedOTPActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".SplashActivity">
+        <activity android:name="com.vcrow.rides.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
